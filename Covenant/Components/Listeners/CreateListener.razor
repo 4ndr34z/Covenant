@@ -1,6 +1,6 @@
 ﻿@page "/listener/create"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 
 @using System.Threading
 @using System.Collections.Concurrent
@@ -11,16 +11,16 @@
 @using Microsoft.Extensions.Configuration
 @using Microsoft.AspNetCore.Components.Authorization
 
-@using Covenant.Core
-@using Covenant.Hubs
-@using Covenant.Models.Covenant
-@using Covenant.Models.Listeners
+@using LemonSqueezy.Core
+@using LemonSqueezy.Hubs
+@using LemonSqueezy.Models.LemonSqueezy
+@using LemonSqueezy.Models.Listeners
 
 @inject IJSRuntime IJSRuntime
-@inject UserManager<CovenantUser> UserManager
+@inject UserManager<LemonSqueezyUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IConfiguration Configuration
-@inject CovenantAPIService CovenantAPIService
+@inject LemonSqueezyAPIService LemonSqueezyAPIService
 @inject ConcurrentDictionary<int, CancellationTokenSource> ListenerCancellationTokens
 @inject IHubContext<EventHub> EventHub
 @inject NavigationManager NavigationManager
@@ -100,7 +100,7 @@
         try
         {
             listener.Status = ListenerStatus.Active;
-            _ = this.InvokeAsync(async () => await CovenantAPIService.CreateHttpListener(listener));
+            _ = this.InvokeAsync(async () => await LemonSqueezyAPIService.CreateHttpListener(listener));
             NavigationManager.NavigateTo("/listener");
         }
         catch (Exception e) when (e is ControllerNotFoundException || e is ControllerBadRequestException || e is ControllerUnauthorizedException)
@@ -115,7 +115,7 @@
         try
         {
             listener.Status = ListenerStatus.Active;
-            _ = this.InvokeAsync(async () => await CovenantAPIService.CreateBridgeListener(listener));
+            _ = this.InvokeAsync(async () => await LemonSqueezyAPIService.CreateBridgeListener(listener));
             NavigationManager.NavigateTo("/listener");
         }
         catch (Exception e) when (e is ControllerNotFoundException || e is ControllerBadRequestException || e is ControllerUnauthorizedException)
@@ -128,7 +128,7 @@
     private async Task<bool> IsAdmin()
     {
         AuthenticationState state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        CovenantUser user = await UserManager.GetUserAsync(state.User);
+        LemonSqueezyUser user = await UserManager.GetUserAsync(state.User);
         return await UserManager.IsInRoleAsync(user, "Administrator");
     }
 }

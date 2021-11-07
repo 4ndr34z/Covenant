@@ -4,7 +4,7 @@
 // regenerated.
 // </auto-generated>
 
-namespace Covenant.API.Models
+namespace LemonSqueezy.API.Models
 {
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;

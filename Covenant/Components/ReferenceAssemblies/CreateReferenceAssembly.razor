@@ -1,9 +1,9 @@
 ﻿@page "/referenceassembly/create"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 
-@using Covenant.Core
-@using Covenant.Models.Grunts
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
 @inject NavigationManager NavigationManager
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap pb-2 mb-3">
@@ -26,7 +26,7 @@
         try
         {
             await Service.CreateReferenceAssembly(assembly);
-            NavigationManager.NavigateTo("/grunttask");
+            NavigationManager.NavigateTo("/mofotask");
         }
         catch (Exception e) when (e is ControllerNotFoundException || e is ControllerBadRequestException || e is ControllerUnauthorizedException)
         {

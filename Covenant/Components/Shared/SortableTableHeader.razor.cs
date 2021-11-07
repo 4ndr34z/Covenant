@@ -1,6 +1,6 @@
-﻿using Covenant.Models;
+﻿using LemonSqueezy.Models;
 
-namespace Covenant.Components.Shared
+namespace LemonSqueezy.Components.Shared
 {
     partial class SortableTableHeader<TItem, TItem2>
     {

@@ -2,15 +2,15 @@
 @page "/home"
 @page "/home/index"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 @implements IDisposable
 
-@using Covenant.Core
-@using Covenant.Models.Grunts
-@using Covenant.Models.Listeners
-@using Covenant.Components.Listeners
-@using Covenant.Components.Grunts
-@using Covenant.Components.GruntTaskings
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+@using LemonSqueezy.Models.Listeners
+@using LemonSqueezy.Components.Listeners
+@using LemonSqueezy.Components.Mofos
+@using LemonSqueezy.Components.MofoTaskings
 @inject INotificationService INotificationService
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
@@ -18,9 +18,9 @@
 </div>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
-    <h4 class="h5">Grunts</h4>
+    <h4 class="h5">Mofos</h4>
 </div>
-<GruntTable @bind-Grunts="Grunts" IsPaginated="true" PageLength="10" IsSearchable="false" />
+<MofoTable @bind-Mofos="Mofos" IsPaginated="true" PageLength="10" IsSearchable="false" />
 <br />
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
@@ -32,56 +32,56 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
     <h4 class="h5">Taskings</h4>
 </div>
-<GruntTaskingTable @bind-GruntTaskings="GruntTaskings" IsPaginated="true" PageLength="10" IsSearchable="false" />
+<MofoTaskingTable @bind-MofoTaskings="MofoTaskings" IsPaginated="true" PageLength="10" IsSearchable="false" />
 <br />
 
 @code {
     [Parameter]
-    public List<Grunt> Grunts { get; set; }
+    public List<Mofo> Mofos { get; set; }
 
     [Parameter]
     public List<Listener> Listeners { get; set; }
 
     [Parameter]
-    public List<GruntTasking> GruntTaskings { get; set; }
+    public List<MofoTasking> MofoTaskings { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        this.Grunts = this.Grunts ?? (await Service.GetGrunts())
-            .Where(G => G.Status != GruntStatus.Hidden && G.Status != GruntStatus.Uninitialized)
+        this.Mofos = this.Mofos ?? (await Service.GetMofos())
+            .Where(G => G.Status != MofoStatus.Hidden && G.Status != MofoStatus.Uninitialized)
             .OrderByDescending(G => G.LastCheckIn)
             .ToList();
         this.Listeners = this.Listeners ?? (await Service.GetListeners()).ToList();
-        this.GruntTaskings = this.GruntTaskings ?? (await Service.GetGruntTaskings()).ToList();
-        this.INotificationService.OnCreateGrunt += OnCreateGrunt;
-        this.INotificationService.OnEditGrunt += OnEditGrunt;
+        this.MofoTaskings = this.MofoTaskings ?? (await Service.GetMofoTaskings()).ToList();
+        this.INotificationService.OnCreateMofo += OnCreateMofo;
+        this.INotificationService.OnEditMofo += OnEditMofo;
         this.INotificationService.OnCreateListener += OnCreateListener;
         this.INotificationService.OnEditListener += OnEditListener;
-        this.INotificationService.OnCreateGruntTasking += OnCreateGruntTasking;
-        this.INotificationService.OnEditGruntTasking += OnEditGruntTasking;
+        this.INotificationService.OnCreateMofoTasking += OnCreateMofoTasking;
+        this.INotificationService.OnEditMofoTasking += OnEditMofoTasking;
     }
 
     public void Dispose()
     {
-        this.INotificationService.OnCreateGrunt -= OnCreateGrunt;
-        this.INotificationService.OnEditGrunt -= OnEditGrunt;
+        this.INotificationService.OnCreateMofo -= OnCreateMofo;
+        this.INotificationService.OnEditMofo -= OnEditMofo;
         this.INotificationService.OnCreateListener -= OnCreateListener;
         this.INotificationService.OnEditListener -= OnEditListener;
-        this.INotificationService.OnCreateGruntTasking -= OnCreateGruntTasking;
-        this.INotificationService.OnEditGruntTasking -= OnEditGruntTasking;
+        this.INotificationService.OnCreateMofoTasking -= OnCreateMofoTasking;
+        this.INotificationService.OnEditMofoTasking -= OnEditMofoTasking;
     }
 
-    private void OnCreateGrunt(object sender, Grunt grunt)
+    private void OnCreateMofo(object sender, Mofo mofo)
     {
-        this.Grunts.Add(grunt);
+        this.Mofos.Add(mofo);
         this.InvokeAsync(() => this.StateHasChanged());
     }
 
-    private void OnEditGrunt(object sender, Grunt grunt)
+    private void OnEditMofo(object sender, Mofo mofo)
     {
-        if (this.Grunts.Any(G => G.Id == grunt.Id))
+        if (this.Mofos.Any(G => G.Id == mofo.Id))
         {
-            this.Grunts[this.Grunts.FindIndex(G => G.Id == grunt.Id)] = grunt;
+            this.Mofos[this.Mofos.FindIndex(G => G.Id == mofo.Id)] = mofo;
             this.InvokeAsync(() => this.StateHasChanged());
         }
     }
@@ -101,17 +101,17 @@
         }
     }
 
-    private void OnCreateGruntTasking(object sender, GruntTasking tasking)
+    private void OnCreateMofoTasking(object sender, MofoTasking tasking)
     {
-        this.GruntTaskings.Add(tasking);
+        this.MofoTaskings.Add(tasking);
         this.InvokeAsync(() => this.StateHasChanged());
     }
 
-    private void OnEditGruntTasking(object sender, GruntTasking tasking)
+    private void OnEditMofoTasking(object sender, MofoTasking tasking)
     {
-        if (this.GruntTaskings.Any(T => T.Id == tasking.Id))
+        if (this.MofoTaskings.Any(T => T.Id == tasking.Id))
         {
-            this.GruntTaskings[this.GruntTaskings.FindIndex(T => T.Id == tasking.Id)] = tasking;
+            this.MofoTaskings[this.MofoTaskings.FindIndex(T => T.Id == tasking.Id)] = tasking;
             this.InvokeAsync(() => this.StateHasChanged());
         }
     }

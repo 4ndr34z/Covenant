@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
@@ -18,13 +18,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Confuser.Core;
 using Confuser.Core.Project;
 
-namespace Covenant.Core
+namespace LemonSqueezy.Core
 {
     public static class Compiler
     {
         public class CompilationRequest
         {
-            public Covenant.Models.Grunts.ImplantLanguage Language { get; set; } = Models.Grunts.ImplantLanguage.CSharp;
+            public LemonSqueezy.Models.Mofos.ImplantLanguage Language { get; set; } = Models.Mofos.ImplantLanguage.CSharp;
             public Platform Platform { get; set; } = Platform.AnyCpu;
         }
 
@@ -109,7 +109,7 @@ namespace Covenant.Core
 
         public static byte[] Compile(CompilationRequest request)
         {
-            if (request.Language == Models.Grunts.ImplantLanguage.CSharp)
+            if (request.Language == Models.Mofos.ImplantLanguage.CSharp)
             {
                 return CompileCSharp((CsharpCompilationRequest)request);
             }
@@ -275,23 +275,23 @@ namespace Covenant.Core
         {
             ConfuserProject project = new ConfuserProject();
             System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-            File.WriteAllBytes(Common.CovenantTempDirectory + "confused", ILBytes);
+            File.WriteAllBytes(Common.LemonSqueezyTempDirectory + "confused", ILBytes);
             string ProjectFile = String.Format(
                 ConfuserExOptions,
-                Common.CovenantTempDirectory,
-                Common.CovenantTempDirectory,
+                Common.LemonSqueezyTempDirectory,
+                Common.LemonSqueezyTempDirectory,
                 "confused"
             );
             doc.Load(new StringReader(ProjectFile));
             project.Load(doc);
-            project.ProbePaths.Add(Common.CovenantAssemblyReferenceNet35Directory);
-            project.ProbePaths.Add(Common.CovenantAssemblyReferenceNet40Directory);
+            project.ProbePaths.Add(Common.LemonSqueezyAssemblyReferenceNet35Directory);
+            project.ProbePaths.Add(Common.LemonSqueezyAssemblyReferenceNet40Directory);
 
             ConfuserParameters parameters = new ConfuserParameters();
             parameters.Project = project;
             parameters.Logger = default;
             ConfuserEngine.Run(parameters).Wait();
-            return File.ReadAllBytes(Common.CovenantTempDirectory + "confused");
+            return File.ReadAllBytes(Common.LemonSqueezyTempDirectory + "confused");
         }
 
         private static string ConfuserExOptions { get; set; } = @"
@@ -400,13 +400,13 @@ namespace Covenant.Core
         public static byte[] Compress(byte[] bytes)
         {
             byte[] compressedILBytes;
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (MemoryStream memOrYstream = new MemoryStream())
             {
-                using (DeflateStream deflateStream = new DeflateStream(memoryStream, CompressionMode.Compress))
+                using (DeflateStream deFlatEstream = new DeflateStream(memOrYstream, CompressionMode.Compress))
                 {
-                    deflateStream.Write(bytes, 0, bytes.Length);
+                    deFlatEstream.Write(bytes, 0, bytes.Length);
                 }
-                compressedILBytes = memoryStream.ToArray();
+                compressedILBytes = memOrYstream.ToArray();
             }
             return compressedILBytes;
         }

@@ -1,0 +1,111 @@
+﻿@inherits OwningComponentBase<ILemonSqueezyService>
+@implements IDisposable
+
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Authorization
+
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.LemonSqueezy
+@using LemonSqueezy.Models.Mofos
+@inject IJSRuntime IJSRuntime
+@inject INotificationService INotificationService
+
+@if (this.TerminalMofos.Any())
+{
+    <ul id="terminals-tab" class="nav nav-tabs mb-3" style="margin-top: 6rem;" role="tablist">
+        @for (int i = 0; i < TerminalMofos.Count(); i++)
+        {
+            int number = i;
+            <li class="nav-item">
+                <a class="nav-link d-flex flex-row justify-content-start pr-0" id="terminal-tab-@number" data-toggle="tab" href="#terminal-@number" role="tab" aria-controls="terminal-@number" aria-selected="false">
+                    <span class="fe fe-terminal"></span>
+                    <span class="ml-1 mr-2">@TerminalMofos[number].Name</span>
+                    <div class="text-muted text-decoration-none mr-2" style="margin-top: -0.1rem;" @onclick="e => OnRemoveTerminal.InvokeAsync(number)">
+                        <span class="fe fe-x" style="font-size: 0.88rem;"></span>
+                    </div>
+                </a>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content" id="terminal-tab-content">
+        @for (int i = 0; i < TerminalMofos.Count(); i++)
+        {
+            int number = i;
+            <div class="tab-pane fade mb-5" id="terminal-@number" role="tabpanel" aria-labelledby="terminal-tab-@number">
+                @if (!string.IsNullOrWhiteSpace(this.TerminalMofos[number].Note))
+                {
+                    <p><b>Note</b>: @this.TerminalMofos[number].Note</p>
+                }
+                <MofoInteractTerminal Mofo="TerminalMofos[number]" OnInteract="OnInteract" />
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<Mofo> TerminalMofos { get; set; } = new List<Mofo>();
+
+    [Parameter]
+    public EventCallback<List<Mofo>> TerminalMofosChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnRemoveTerminal { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationState { get; set; }
+
+    private LemonSqueezyUser CurrentUser { get; set; }
+    private string ShowTab { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.CurrentUser = await Service.GetCurrentUser((await this.AuthenticationState).User);
+        this.INotificationService.OnEditMofo += OnEditMofo;
+        Service.DisposeContext();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (this.ShowTab != string.Empty)
+        {
+            await IJSRuntime.InvokeAsync<string>("ShowTab", ShowTab);
+            this.ShowTab = string.Empty;
+        }
+    }
+
+    public void Dispose()
+    {
+        this.INotificationService.OnEditMofo -= OnEditMofo;
+    }
+
+    private void OnEditMofo(object sender, Mofo mofo)
+    {
+        if (this.TerminalMofos.Any(G => G.Id == mofo.Id))
+        {
+            this.TerminalMofos[this.TerminalMofos.FindIndex(G => G.Id == mofo.Id)] = mofo;
+            this.InvokeAsync(() => this.StateHasChanged());
+        }
+    }
+
+    public void OnSelectTerminal(Mofo mofo)
+    {
+        int index = this.TerminalMofos.FindIndex(G => G.Id == mofo.Id);
+        if (index == -1)
+        {
+            this.TerminalMofos.Add(mofo);
+            index = this.TerminalMofos.Count() - 1;
+        }
+        this.ShowTab = $"#terminal-tab-{index}";
+        this.TerminalMofosChanged.InvokeAsync(this.TerminalMofos);
+        this.StateHasChanged();
+    }
+
+    private async Task OnInteract(Tuple<Mofo, string> tuple)
+    {
+        MofoCommand command = await Service.InteractMofo(tuple.Item1.Id, this.CurrentUser.Id, tuple.Item2);
+        Service.DisposeContext();
+        this.StateHasChanged();
+    }
+}

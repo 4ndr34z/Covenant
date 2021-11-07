@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System.Linq;
@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-using Covenant.Core;
-using Covenant.Models;
-using Covenant.Models.Covenant;
+using LemonSqueezy.Core;
+using LemonSqueezy.Models;
+using LemonSqueezy.Models.LemonSqueezy;
 
-namespace Covenant.Controllers
+namespace LemonSqueezy.Controllers
 {
     [ApiController, Route("api/credentials"), Authorize(Policy = "RequireJwtBearer")]
     public class CredentialApiController : Controller
     {
-        private readonly ICovenantService _service;
+        private readonly ILemonSqueezyService _service;
 
-        public CredentialApiController(ICovenantService service)
+        public CredentialApiController(ILemonSqueezyService service)
         {
             _service = service;
         }

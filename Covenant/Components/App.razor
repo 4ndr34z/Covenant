@@ -1,21 +1,21 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Authorization
-@using Covenant.Core
-@using Covenant.Models.Covenant
-@using Covenant.Components.Shared
-@inject UserManager<CovenantUser> UserManager
-@inject SignInManager<CovenantUser> SignInManager
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.LemonSqueezy
+@using LemonSqueezy.Components.Shared
+@inject UserManager<LemonSqueezyUser> UserManager
+@inject SignInManager<LemonSqueezyUser> SignInManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject ICovenantService ICovenantService
+@inject ILemonSqueezyService ILemonSqueezyService
 
 <CascadingAuthenticationState>
     <Router AppAssembly="typeof(Program).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout)">
                 <NotAuthorized>
-                    <p>You are not authorized to view this page, contact a Covenant administrator for more information.</p>
+                    <p>You are not authorized to view this page, contact a LemonSqueezy administrator for more information.</p>
                 </NotAuthorized>
             </AuthorizeRouteView>
         </Found>

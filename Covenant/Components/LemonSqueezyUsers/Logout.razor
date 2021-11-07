@@ -1,0 +1,12 @@
+﻿@using LemonSqueezy.Models.LemonSqueezy
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager NavigationManager
+@inject SignInManager<LemonSqueezyUser> SignInManager
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await SignInManager.SignOutAsync();
+        NavigationManager.NavigateTo("/covenantuser/login");
+    }
+}

@@ -1,10 +1,10 @@
 ﻿@page "/template/edit/{ImplantTemplateId:int}"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 
 @using Microsoft.JSInterop
-@using Covenant.Core
-@using Covenant.Models.Grunts
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
 @inject IJSRuntime IJSRuntime
 @inject NavigationManager NavigationManager
 

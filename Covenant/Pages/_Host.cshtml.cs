@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Covenant.Pages
+namespace LemonSqueezy.Pages
 {
     public class _HostModel : PageModel
     {

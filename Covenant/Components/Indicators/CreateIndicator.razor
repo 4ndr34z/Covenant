@@ -1,9 +1,9 @@
 ﻿@page "/indicator/create"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 
-@using Covenant.Core
-@using Covenant.Models.Indicators
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Indicators
 @inject NavigationManager NavigationManager
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">

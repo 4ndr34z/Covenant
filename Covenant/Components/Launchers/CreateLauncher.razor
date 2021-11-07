@@ -1,12 +1,12 @@
 ﻿@page "/launcher/create/{LauncherId:int}"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 @implements IDisposable
 
-@using Covenant.Core
-@using Covenant.Models.Covenant
-@using Covenant.Models.Listeners
-@using Covenant.Models.Launchers
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.LemonSqueezy
+@using LemonSqueezy.Models.Listeners
+@using LemonSqueezy.Models.Launchers
 
 @using Microsoft.JSInterop
 @inject IJSRuntime IJSRuntime
@@ -315,7 +315,7 @@
         else if (Launcher.Name == "PowerShell")
         {
             string code = ((PowerShellLauncher)Launcher).PowerShellCode;
-            content = string.IsNullOrEmpty(code) ? "" : Convert.ToBase64String(Common.CovenantEncoding.GetBytes(code));
+            content = string.IsNullOrEmpty(code) ? "" : Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(code));
         }
         else if (Launcher.Name == "InstallUtil")
         {
@@ -325,7 +325,7 @@
         else if (new List<string> { "Cscript", "InstallUtil", "MSBuild", "Mshta", "Regsvr32", "Wmic", "Wscript" }.Contains(Launcher.Name))
         {
             string code = ((DiskLauncher)Launcher).DiskCode;
-            content = string.IsNullOrEmpty(code) ? "" : Convert.ToBase64String(Common.CovenantEncoding.GetBytes(code));
+            content = string.IsNullOrEmpty(code) ? "" : Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(code));
         }
         return content == null ? "" : content;
     }

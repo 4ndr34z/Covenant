@@ -1,0 +1,38 @@
+﻿@page "/mofotask/create"
+@attribute [Authorize(Roles = "User, Administrator")]
+@inherits OwningComponentBase<ILemonSqueezyService>
+
+@using Microsoft.JSInterop
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+@inject IJSRuntime IJSRuntime
+@inject NavigationManager NavigationManager
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap pb-2 mb-3">
+    <h1 class="h2">Create MofoTask</h1>
+</div>
+
+<MofoTaskForm MofoTask="MofoTask" OnSubmit="OnCreate" SubmitIcon="plus" SubmitLabel="Create" />
+
+@code {
+    [Parameter]
+    public MofoTask MofoTask { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.MofoTask = this.MofoTask ?? new MofoTask();
+    }
+
+    private async Task OnCreate(MofoTask task)
+    {
+        try
+        {
+            await Service.CreateMofoTask(task);
+            NavigationManager.NavigateTo("/mofotask");
+        }
+        catch (Exception e) when (e is ControllerNotFoundException || e is ControllerBadRequestException || e is ControllerUnauthorizedException)
+        {
+            // return RedirectToAction(nameof(Edit), new { Id = taskModel.Id });
+        }
+    }
+}

@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System.Threading.Tasks;
@@ -8,17 +8,17 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-using Covenant.Core;
-using Covenant.Models.Covenant;
+using LemonSqueezy.Core;
+using LemonSqueezy.Models.LemonSqueezy;
 
-namespace Covenant.Controllers
+namespace LemonSqueezy.Controllers
 {
     [ApiController, Route("api/events"), Authorize(Policy = "RequireJwtBearer")]
     public class EventApiController : Controller
     {
-        private readonly ICovenantService _service;
+        private readonly ILemonSqueezyService _service;
 
-        public EventApiController(ICovenantService service)
+        public EventApiController(ILemonSqueezyService service)
         {
             _service = service;
         }
@@ -56,7 +56,7 @@ namespace Covenant.Controllers
 
         // GET: api/events/time
         // <summary>
-        // Get Covenant's current DateTime
+        // Get LemonSqueezy's current DateTime
         // </summary>
         [HttpGet("time", Name = "GetEventTime")]
         public async Task<ActionResult<long>> GetEventTime()

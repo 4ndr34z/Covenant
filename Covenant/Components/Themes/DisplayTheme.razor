@@ -2,8 +2,8 @@
 
 @using Microsoft.JSInterop
 
-@using Covenant.Core
-@using Covenant.Models.Covenant
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.LemonSqueezy
 @inject IJSRuntime IJSRuntime
 @inject INotificationService INotificationService
 
@@ -54,14 +54,14 @@
         color: var(--background-text-color); /*?*/
     }
 
-    #nav-dashboard, #nav-listeners, #nav-launchers, #nav-grunts, #nav-templates,
+    #nav-dashboard, #nav-listeners, #nav-launchers, #nav-mofos, #nav-templates,
     #nav-tasks, #nav-taskings, #nav-graph, #nav-data, #nav-users {
         color: var(--background-text-color);
         opacity: 0.5;
     }
 
     #nav-dashboard.nav-link.active, #nav-listeners.nav-link.active, #nav-launchers.nav-link.active,
-    #nav-grunts.nav-link.active, #nav-templates.nav-link.active, #nav-tasks.nav-link.active,
+    #nav-mofos.nav-link.active, #nav-templates.nav-link.active, #nav-tasks.nav-link.active,
     #nav-taskings.nav-link.active, #nav-graph.nav-link.active, #nav-data.nav-link.active,
     #nav-users.nav-link.active {
         color: var(--primary-highlight-color);
@@ -201,17 +201,17 @@
         color: var(--terminal-highlight-color);
     }
 
-    .grunt-interact::-webkit-scrollbar,
-    .grunt-interact::-webkit-scrollbar-track {
+    .mofo-interact::-webkit-scrollbar,
+    .mofo-interact::-webkit-scrollbar-track {
         background-color: var(--terminal-color);
     }
 
-    .grunt-interact::-webkit-scrollbar-thumb {
+    .mofo-interact::-webkit-scrollbar-thumb {
         background-color: var(--terminal-text-color);
     }
 
-    .grunt-interact::placeholder,
-    .grunt-interact::-ms-input-placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    .mofo-interact::placeholder,
+    .mofo-interact::-ms-input-placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
         color: var(--terminal-text-color);
         opacity: 0.8; /* Firefox */
     }
@@ -283,23 +283,23 @@
     public Theme Theme { get; set; }
 
     [Parameter]
-    public CovenantUser CovenantUser { get; set; }
+    public LemonSqueezyUser LemonSqueezyUser { get; set; }
 
     protected override void OnInitialized()
     {
-        this.INotificationService.OnEditCovenantUser += OnEditCovenantUser;
+        this.INotificationService.OnEditLemonSqueezyUser += OnEditLemonSqueezyUser;
         // this.INotificationService.OnEditTheme += OnEditTheme;
     }
 
     public void Dispose()
     {
-        this.INotificationService.OnEditCovenantUser -= OnEditCovenantUser;
+        this.INotificationService.OnEditLemonSqueezyUser -= OnEditLemonSqueezyUser;
         // this.INotificationService.OnEditTheme += OnEditTheme;
     }
 
-    private void OnEditCovenantUser(object sender, CovenantUser user)
+    private void OnEditLemonSqueezyUser(object sender, LemonSqueezyUser user)
     {
-        if (this.CovenantUser.Id == user.Id && this.CovenantUser.ThemeId != user.ThemeId)
+        if (this.LemonSqueezyUser.Id == user.Id && this.LemonSqueezyUser.ThemeId != user.ThemeId)
         {
             this.InvokeAsync(() => IJSRuntime.InvokeAsync<string>("ReloadPage").WaitTask());
         }

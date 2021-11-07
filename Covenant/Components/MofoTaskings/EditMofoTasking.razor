@@ -1,0 +1,25 @@
+﻿@page "/mofotasking/edit/{MofoTaskingId:int}"
+@attribute [Authorize(Roles = "User, Administrator")]
+@inherits OwningComponentBase<ILemonSqueezyService>
+
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap pb-2 mb-3">
+    <h1 class="h2">MofoTasking: <span id="tasking-name" class="primary-color">@MofoTasking.Name</span></h1>
+</div>
+
+<MofoTaskingForm MofoTasking="MofoTasking" />
+
+@code {
+    [Parameter]
+    public int MofoTaskingId { get; set; }
+
+    [Parameter]
+    public MofoTasking MofoTasking { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.MofoTasking = this.MofoTasking ?? await Service.GetMofoTasking(this.MofoTaskingId);
+    }
+}

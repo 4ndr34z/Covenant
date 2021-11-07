@@ -1,14 +1,14 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-using Covenant.Models.Listeners;
+using LemonSqueezy.Models.Listeners;
 
-namespace Covenant.Models.Launchers
+namespace LemonSqueezy.Models.Launchers
 {
     public class WmicLauncher : ScriptletLauncher
     {
@@ -16,7 +16,7 @@ namespace Covenant.Models.Launchers
         {
             this.Name = "Wmic";
             this.Type = LauncherType.Wmic;
-            this.Description = "Uses wmic.exe to launch a Grunt using a COM activated Delegate and ActiveXObjects (ala DotNetToJScript). Please note that DotNetToJScript-based launchers may not work on Windows 10 and Windows Server 2016.";
+            this.Description = "Uses wmic.exe to launch a Mofo using a COM activated Delegate and ActiveXObjects (ala DotNetToJScript). Please note that DotNetToJScript-based launchers may not work on Windows 10 and Windows Server 2016.";
             this.ScriptType = ScriptletType.Stylesheet;
             this.OutputKind = OutputKind.DynamicallyLinkedLibrary;
             this.CompressStager = false;

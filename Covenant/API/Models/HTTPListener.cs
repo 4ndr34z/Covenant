@@ -4,7 +4,7 @@
 // regenerated.
 // </auto-generated>
 
-namespace Covenant.API.Models
+namespace LemonSqueezy.API.Models
 {
     using Microsoft.Rest;
     using Newtonsoft.Json;
@@ -27,7 +27,7 @@ namespace Covenant.API.Models
         /// </summary>
         /// <param name="status">Possible values include: 'Uninitialized',
         /// 'Active', 'Stopped'</param>
-        public HttpListener(bool useSSL, IList<string> urls, string name, string guid, string description, string bindAddress, int bindPort, IList<string> connectAddresses, int connectPort, int profileId, int listenerTypeId, ListenerStatus status, string sslCertificate = default(string), string sslCertificatePassword = default(string), string sslCertHash = default(string), int? id = default(int?), Profile profile = default(Profile), ListenerType listenerType = default(ListenerType), string covenantUrl = default(string), string covenantToken = default(string), System.DateTime? startTime = default(System.DateTime?))
+        public HttpListener(bool useSSL, IList<string> urls, string name, string someid, string description, string bindAddress, int bindPort, IList<string> connectAddresses, int connectPort, int profileId, int listenerTypeId, ListenerStatus status, string sslCertificate = default(string), string sslCertificatePassword = default(string), string sslCertHash = default(string), int? id = default(int?), Profile profile = default(Profile), ListenerType listenerType = default(ListenerType), string covenantUrl = default(string), string covenantToken = default(string), System.DateTime? startTime = default(System.DateTime?))
         {
             UseSSL = useSSL;
             SslCertificate = sslCertificate;
@@ -36,7 +36,7 @@ namespace Covenant.API.Models
             Urls = urls;
             Id = id;
             Name = name;
-            Guid = guid;
+            Guid = someid;
             Description = description;
             BindAddress = bindAddress;
             BindPort = bindPort;
@@ -47,8 +47,8 @@ namespace Covenant.API.Models
             ListenerTypeId = listenerTypeId;
             ListenerType = listenerType;
             Status = status;
-            CovenantUrl = covenantUrl;
-            CovenantToken = covenantToken;
+            LemonSqueezyUrl = covenantUrl;
+            LemonSqueezyToken = covenantToken;
             StartTime = startTime;
             CustomInit();
         }
@@ -95,7 +95,7 @@ namespace Covenant.API.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "guid")]
+        [JsonProperty(PropertyName = "someid")]
         public string Guid { get; set; }
 
         /// <summary>
@@ -153,12 +153,12 @@ namespace Covenant.API.Models
         /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "covenantUrl")]
-        public string CovenantUrl { get; set; }
+        public string LemonSqueezyUrl { get; set; }
 
         /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "covenantToken")]
-        public string CovenantToken { get; set; }
+        public string LemonSqueezyToken { get; set; }
 
         /// <summary>
         /// </summary>

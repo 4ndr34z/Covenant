@@ -1,11 +1,11 @@
 ﻿@page "/graph"
 @page "/graph/index"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 
 @using Microsoft.JSInterop
-@using Covenant.Core
-@using Covenant.Models.Listeners
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Listeners
 @inject IJSRuntime IJSRuntime
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">

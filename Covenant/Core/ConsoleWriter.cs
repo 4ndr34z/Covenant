@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Covenant.Core
+namespace LemonSqueezy.Core
 {
     public static class ConsoleWriter
     {

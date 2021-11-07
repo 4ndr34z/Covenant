@@ -1,11 +1,11 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System.Text;
 using System.Security.Cryptography;
 
-namespace Covenant.Core.Encryption
+namespace LemonSqueezy.Core.Encryption
 {
     public static class Utilities
     {

@@ -1,15 +1,15 @@
 ﻿@inherits LayoutComponentBase
 
-@using Covenant.Core
-@using Covenant.Models.Covenant
-@using Covenant.Components.Themes 
-@using Covenant.Components.Events
-@using Covenant.Components.CovenantUsers
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.LemonSqueezy
+@using LemonSqueezy.Components.Themes 
+@using LemonSqueezy.Components.Events
+@using LemonSqueezy.Components.LemonSqueezyUsers
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Authorization
-@inject UserManager<CovenantUser> UserManager
-@inject ICovenantService ICovenantService
+@inject UserManager<LemonSqueezyUser> UserManager
+@inject ILemonSqueezyService ILemonSqueezyService
 
 <AuthorizeView>
     <NotAuthorized>
@@ -25,7 +25,7 @@
             <CascadingValue Value="Theme">
                 <nav class="navbar navbar-expand navbar-dark sticky-top border-bottom border-dark">
                     <a class="navbar-brand ml-3 align-items-center" href="/">
-                        <img src="/images/covenant-white.png" alt="Covenant" height="28" width="101">
+                        <img src="/images/covenant-white.png" alt="LemonSqueezy" height="28" width="101">
                     </a>
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item text-nowrap">
@@ -61,9 +61,9 @@
                                         </NavLink>
                                     </li>
                                     <li class="nav-item">
-                                        <NavLink href="/grunt" id="nav-grunts" class="nav-link" Match="NavLinkMatch.Prefix">
+                                        <NavLink href="/mofo" id="nav-mofos" class="nav-link" Match="NavLinkMatch.Prefix">
                                             <span class="fe fe-terminal"></span>
-                                            Grunts
+                                            Mofos
                                         </NavLink>
                                     </li>
                                     <li class="nav-item">
@@ -73,13 +73,13 @@
                                         </NavLink>
                                     </li>
                                     <li class="nav-item">
-                                        <NavLink href="/grunttask" id="nav-tasks" class="nav-link" Match="NavLinkMatch.Prefix">
+                                        <NavLink href="/mofotask" id="nav-tasks" class="nav-link" Match="NavLinkMatch.Prefix">
                                             <span class="fe fe-package"></span>
                                             Tasks
                                         </NavLink>
                                     </li>
                                     <li class="nav-item">
-                                        <NavLink href="/grunttasking" id="nav-taskings" class="nav-link" Match="NavLinkMatch.Prefix">
+                                        <NavLink href="/mofotasking" id="nav-taskings" class="nav-link" Match="NavLinkMatch.Prefix">
                                             <span class="fe fe-layers"></span>
                                             Taskings
                                         </NavLink>
@@ -114,7 +114,7 @@
                         <p></p>
                     </footer>
                 </div>
-                <DisplayTheme CovenantUser="User" />
+                <DisplayTheme LemonSqueezyUser="User" />
             </CascadingValue>
         }
     </Authorized>
@@ -124,17 +124,17 @@
     [CascadingParameter]
     private Task<AuthenticationState> AuthState { get; set; }
 
-    private CovenantUser User { get; set; }
+    private LemonSqueezyUser User { get; set; }
     private Theme Theme { get; set; }
     private IEnumerable<Theme> Themes { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         this.User = await this.UserManager.GetUserAsync((await AuthState).User);
-        this.Themes = await this.ICovenantService.GetThemes();
+        this.Themes = await this.ILemonSqueezyService.GetThemes();
         if (this.User != null)
         {
-            this.Theme = await this.ICovenantService.GetTheme(this.User.ThemeId);
+            this.Theme = await this.ILemonSqueezyService.GetTheme(this.User.ThemeId);
         }
     }
 }

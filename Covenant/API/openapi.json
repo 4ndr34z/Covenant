@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Covenant API",
+    "title": "LemonSqueezy API",
     "version": "v0.1"
   },
   "paths": {
@@ -185,7 +185,7 @@
     "/api/users": {
       "get": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "GetUsers",
         "produces": [
@@ -199,7 +199,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/CovenantUser"
+                "$ref": "#/definitions/LemonSqueezyUser"
               }
             }
           }
@@ -207,7 +207,7 @@
       },
       "post": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "CreateUser",
         "consumes": [
@@ -226,7 +226,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/CovenantUserRegister"
+              "$ref": "#/definitions/LemonSqueezyUserRegister"
             }
           }
         ],
@@ -234,14 +234,14 @@
           "201": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/CovenantUser"
+              "$ref": "#/definitions/LemonSqueezyUser"
             }
           }
         }
       },
       "put": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "EditUser",
         "consumes": [
@@ -260,7 +260,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/CovenantUser"
+              "$ref": "#/definitions/LemonSqueezyUser"
             }
           }
         ],
@@ -268,7 +268,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/CovenantUser"
+              "$ref": "#/definitions/LemonSqueezyUser"
             }
           }
         }
@@ -277,7 +277,7 @@
     "/api/users/{id}": {
       "get": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "GetUser",
         "produces": [
@@ -297,14 +297,14 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/CovenantUser"
+              "$ref": "#/definitions/LemonSqueezyUser"
             }
           }
         }
       },
       "delete": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "DeleteUser",
         "parameters": [
@@ -325,7 +325,7 @@
     "/api/users/current": {
       "get": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "GetCurrentUser",
         "produces": [
@@ -337,7 +337,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/CovenantUser"
+              "$ref": "#/definitions/LemonSqueezyUser"
             }
           }
         }
@@ -346,7 +346,7 @@
     "/api/users/login": {
       "post": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "Login",
         "consumes": [
@@ -365,7 +365,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/CovenantUserLogin"
+              "$ref": "#/definitions/LemonSqueezyUserLogin"
             }
           }
         ],
@@ -373,7 +373,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/CovenantUserLoginResult"
+              "$ref": "#/definitions/LemonSqueezyUserLoginResult"
             }
           }
         }
@@ -382,7 +382,7 @@
     "/api/users/logon": {
       "put": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "EditUserPassword",
         "consumes": [
@@ -401,7 +401,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/CovenantUserLogin"
+              "$ref": "#/definitions/LemonSqueezyUserLogin"
             }
           }
         ],
@@ -409,7 +409,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/CovenantUser"
+              "$ref": "#/definitions/LemonSqueezyUser"
             }
           }
         }
@@ -418,7 +418,7 @@
     "/api/users/roles": {
       "get": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "GetUsersRoles",
         "produces": [
@@ -442,7 +442,7 @@
     "/api/users/{id}/roles": {
       "get": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "GetUserRoles",
         "produces": [
@@ -474,7 +474,7 @@
     "/api/users/{id}/roles/{rid}": {
       "get": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "GetUserRole",
         "produces": [
@@ -507,7 +507,7 @@
       },
       "post": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "CreateUserRole",
         "produces": [
@@ -540,7 +540,7 @@
       },
       "delete": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "DeleteUserRole",
         "parameters": [
@@ -567,7 +567,7 @@
     "/api/roles": {
       "get": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "GetRoles",
         "produces": [
@@ -591,7 +591,7 @@
     "/api/roles/{rid}": {
       "get": {
         "tags": [
-          "CovenantUserApi"
+          "LemonSqueezyUserApi"
         ],
         "operationId": "GetRole",
         "produces": [
@@ -1478,12 +1478,12 @@
         }
       }
     },
-    "/api/grunts": {
+    "/api/mofos": {
       "get": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "GetGrunts",
+        "operationId": "GetMofos",
         "produces": [
           "text/plain",
           "application/json",
@@ -1495,7 +1495,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/Grunt"
+                "$ref": "#/definitions/Mofo"
               }
             }
           }
@@ -1503,9 +1503,9 @@
       },
       "post": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "CreateGrunt",
+        "operationId": "CreateMofo",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -1522,7 +1522,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/Grunt"
+              "$ref": "#/definitions/Mofo"
             }
           }
         ],
@@ -1530,16 +1530,16 @@
           "201": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Grunt"
+              "$ref": "#/definitions/Mofo"
             }
           }
         }
       },
       "put": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "EditGrunt",
+        "operationId": "EditMofo",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -1556,7 +1556,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/Grunt"
+              "$ref": "#/definitions/Mofo"
             }
           }
         ],
@@ -1564,18 +1564,18 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Grunt"
+              "$ref": "#/definitions/Mofo"
             }
           }
         }
       }
     },
-    "/api/grunts/{id}": {
+    "/api/mofos/{id}": {
       "get": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "GetGrunt",
+        "operationId": "GetMofo",
         "produces": [
           "text/plain",
           "application/json",
@@ -1594,16 +1594,16 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Grunt"
+              "$ref": "#/definitions/Mofo"
             }
           }
         }
       },
       "delete": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "DeleteGrunt",
+        "operationId": "DeleteMofo",
         "parameters": [
           {
             "in": "path",
@@ -1620,12 +1620,12 @@
         }
       }
     },
-    "/api/grunts/{name}": {
+    "/api/mofos/{name}": {
       "get": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "GetGruntByName",
+        "operationId": "GetMofoByName",
         "produces": [
           "text/plain",
           "application/json",
@@ -1643,18 +1643,18 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Grunt"
+              "$ref": "#/definitions/Mofo"
             }
           }
         }
       }
     },
-    "/api/grunts/guid/{guid}": {
+    "/api/mofos/someid/{someid}": {
       "get": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "GetGruntByGUID",
+        "operationId": "GetMofoBySOMEID",
         "produces": [
           "text/plain",
           "application/json",
@@ -1663,7 +1663,7 @@
         "parameters": [
           {
             "in": "path",
-            "name": "guid",
+            "name": "someid",
             "required": true,
             "type": "string"
           }
@@ -1672,18 +1672,18 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Grunt"
+              "$ref": "#/definitions/Mofo"
             }
           }
         }
       }
     },
-    "/api/grunts/originalguid/{serverguid}": {
+    "/api/mofos/originalsomeid/{serversomeid}": {
       "get": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "GetGruntByOriginalServerGUID",
+        "operationId": "GetMofoByOriginalServerSOMEID",
         "produces": [
           "text/plain",
           "application/json",
@@ -1692,7 +1692,7 @@
         "parameters": [
           {
             "in": "path",
-            "name": "serverguid",
+            "name": "serversomeid",
             "required": true,
             "type": "string"
           }
@@ -1701,18 +1701,18 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Grunt"
+              "$ref": "#/definitions/Mofo"
             }
           }
         }
       }
     },
-    "/api/grunts/{id}/path/{cid}": {
+    "/api/mofos/{id}/path/{cid}": {
       "get": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "GetPathToChildGrunt",
+        "operationId": "GetPathToChildMofo",
         "produces": [
           "text/plain",
           "application/json",
@@ -1747,12 +1747,12 @@
         }
       }
     },
-    "/api/grunts/{id}/outbound": {
+    "/api/mofos/{id}/outbound": {
       "get": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "GetOutboundGrunt",
+        "operationId": "GetOutboundMofo",
         "produces": [
           "text/plain",
           "application/json",
@@ -1771,18 +1771,18 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Grunt"
+              "$ref": "#/definitions/Mofo"
             }
           }
         }
       }
     },
-    "/api/grunts/{id}/interact": {
+    "/api/mofos/{id}/interact": {
       "post": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "InteractGrunt",
+        "operationId": "InteractMofo",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -1814,18 +1814,18 @@
           "201": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntCommand"
+              "$ref": "#/definitions/MofoCommand"
             }
           }
         }
       }
     },
-    "/api/grunts/{id}/compileexecutor": {
+    "/api/mofos/{id}/compileexecutor": {
       "get": {
         "tags": [
-          "GruntApi"
+          "MofoApi"
         ],
-        "operationId": "CompileGruntExecutor",
+        "operationId": "CompileMofoExecutor",
         "produces": [
           "text/plain",
           "application/json",
@@ -1854,9 +1854,9 @@
     "/api/commands": {
       "get": {
         "tags": [
-          "GruntCommandApi"
+          "MofoCommandApi"
         ],
-        "operationId": "GetGruntCommands",
+        "operationId": "GetMofoCommands",
         "produces": [
           "text/plain",
           "application/json",
@@ -1868,7 +1868,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/GruntCommand"
+                "$ref": "#/definitions/MofoCommand"
               }
             }
           }
@@ -1876,9 +1876,9 @@
       },
       "post": {
         "tags": [
-          "GruntCommandApi"
+          "MofoCommandApi"
         ],
-        "operationId": "CreateGruntCommand",
+        "operationId": "CreateMofoCommand",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -1895,7 +1895,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/GruntCommand"
+              "$ref": "#/definitions/MofoCommand"
             }
           }
         ],
@@ -1903,16 +1903,16 @@
           "201": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntCommand"
+              "$ref": "#/definitions/MofoCommand"
             }
           }
         }
       },
       "put": {
         "tags": [
-          "GruntCommandApi"
+          "MofoCommandApi"
         ],
-        "operationId": "EditGruntCommand",
+        "operationId": "EditMofoCommand",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -1929,7 +1929,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/GruntCommand"
+              "$ref": "#/definitions/MofoCommand"
             }
           }
         ],
@@ -1937,7 +1937,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntCommand"
+              "$ref": "#/definitions/MofoCommand"
             }
           }
         }
@@ -1946,9 +1946,9 @@
     "/api/commands/{id}": {
       "get": {
         "tags": [
-          "GruntCommandApi"
+          "MofoCommandApi"
         ],
-        "operationId": "GetGruntCommand",
+        "operationId": "GetMofoCommand",
         "produces": [
           "text/plain",
           "application/json",
@@ -1967,16 +1967,16 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntCommand"
+              "$ref": "#/definitions/MofoCommand"
             }
           }
         }
       },
       "delete": {
         "tags": [
-          "GruntCommandApi"
+          "MofoCommandApi"
         ],
-        "operationId": "DeleteGruntCommand",
+        "operationId": "DeleteMofoCommand",
         "parameters": [
           {
             "in": "path",
@@ -1993,12 +1993,12 @@
         }
       }
     },
-    "/api/grunttasks": {
+    "/api/mofotasks": {
       "get": {
         "tags": [
-          "GruntTaskApi"
+          "MofoTaskApi"
         ],
-        "operationId": "GetGruntTasks",
+        "operationId": "GetMofoTasks",
         "produces": [
           "text/plain",
           "application/json",
@@ -2010,7 +2010,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/GruntTask"
+                "$ref": "#/definitions/MofoTask"
               }
             }
           }
@@ -2018,9 +2018,9 @@
       },
       "post": {
         "tags": [
-          "GruntTaskApi"
+          "MofoTaskApi"
         ],
-        "operationId": "CreateGruntTask",
+        "operationId": "CreateMofoTask",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -2037,7 +2037,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/GruntTask"
+              "$ref": "#/definitions/MofoTask"
             }
           }
         ],
@@ -2045,16 +2045,16 @@
           "201": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntTask"
+              "$ref": "#/definitions/MofoTask"
             }
           }
         }
       },
       "put": {
         "tags": [
-          "GruntTaskApi"
+          "MofoTaskApi"
         ],
-        "operationId": "EditGruntTask",
+        "operationId": "EditMofoTask",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -2071,7 +2071,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/GruntTask"
+              "$ref": "#/definitions/MofoTask"
             }
           }
         ],
@@ -2079,18 +2079,18 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntTask"
+              "$ref": "#/definitions/MofoTask"
             }
           }
         }
       }
     },
-    "/api/grunttasks/{id}": {
+    "/api/mofotasks/{id}": {
       "get": {
         "tags": [
-          "GruntTaskApi"
+          "MofoTaskApi"
         ],
-        "operationId": "GetGruntTask",
+        "operationId": "GetMofoTask",
         "produces": [
           "text/plain",
           "application/json",
@@ -2109,16 +2109,16 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntTask"
+              "$ref": "#/definitions/MofoTask"
             }
           }
         }
       },
       "delete": {
         "tags": [
-          "GruntTaskApi"
+          "MofoTaskApi"
         ],
-        "operationId": "DeleteGruntTask",
+        "operationId": "DeleteMofoTask",
         "parameters": [
           {
             "in": "path",
@@ -2138,9 +2138,9 @@
     "/api/taskings": {
       "get": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "GetAllGruntTaskings",
+        "operationId": "GetAllMofoTaskings",
         "produces": [
           "text/plain",
           "application/json",
@@ -2152,7 +2152,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/GruntTasking"
+                "$ref": "#/definitions/MofoTasking"
               }
             }
           }
@@ -2160,9 +2160,9 @@
       },
       "post": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "CreateGruntTasking",
+        "operationId": "CreateMofoTasking",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -2179,7 +2179,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/GruntTasking"
+              "$ref": "#/definitions/MofoTasking"
             }
           }
         ],
@@ -2187,16 +2187,16 @@
           "201": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntTasking"
+              "$ref": "#/definitions/MofoTasking"
             }
           }
         }
       },
       "put": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "EditGruntTasking",
+        "operationId": "EditMofoTasking",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -2213,7 +2213,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/GruntTasking"
+              "$ref": "#/definitions/MofoTasking"
             }
           }
         ],
@@ -2221,18 +2221,18 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntTasking"
+              "$ref": "#/definitions/MofoTasking"
             }
           }
         }
       }
     },
-    "/api/grunts/{id}/taskings": {
+    "/api/mofos/{id}/taskings": {
       "get": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "GetGruntTaskings",
+        "operationId": "GetMofoTaskings",
         "produces": [
           "text/plain",
           "application/json",
@@ -2253,19 +2253,19 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/GruntTasking"
+                "$ref": "#/definitions/MofoTasking"
               }
             }
           }
         }
       }
     },
-    "/api/grunts/{id}/taskings/search": {
+    "/api/mofos/{id}/taskings/search": {
       "get": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "GetSearchGruntTaskings",
+        "operationId": "GetSearchMofoTaskings",
         "produces": [
           "text/plain",
           "application/json",
@@ -2286,19 +2286,19 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/GruntTasking"
+                "$ref": "#/definitions/MofoTasking"
               }
             }
           }
         }
       }
     },
-    "/api/grunts/{id}/taskings/uninitialized": {
+    "/api/mofos/{id}/taskings/uninitialized": {
       "get": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "GetUninitializedGruntTaskings",
+        "operationId": "GetUninitializedMofoTaskings",
         "produces": [
           "text/plain",
           "application/json",
@@ -2319,19 +2319,19 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/GruntTasking"
+                "$ref": "#/definitions/MofoTasking"
               }
             }
           }
         }
       }
     },
-    "/api/grunts/{id}/taskings/search/uninitialized": {
+    "/api/mofos/{id}/taskings/search/uninitialized": {
       "get": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "GetSearchUninitializedGruntTaskings",
+        "operationId": "GetSearchUninitializedMofoTaskings",
         "produces": [
           "text/plain",
           "application/json",
@@ -2352,7 +2352,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/GruntTasking"
+                "$ref": "#/definitions/MofoTasking"
               }
             }
           }
@@ -2362,9 +2362,9 @@
     "/api/taskings/{tid}": {
       "get": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "GetGruntTasking",
+        "operationId": "GetMofoTasking",
         "produces": [
           "text/plain",
           "application/json",
@@ -2383,16 +2383,16 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntTasking"
+              "$ref": "#/definitions/MofoTasking"
             }
           }
         }
       },
       "delete": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "DeleteGruntTasking",
+        "operationId": "DeleteMofoTasking",
         "parameters": [
           {
             "in": "path",
@@ -2409,12 +2409,12 @@
         }
       }
     },
-    "/api/grunts/taskings/{taskingname}": {
+    "/api/mofos/taskings/{taskingname}": {
       "get": {
         "tags": [
-          "GruntTaskingApi"
+          "MofoTaskingApi"
         ],
-        "operationId": "GetGruntTaskingByName",
+        "operationId": "GetMofoTaskingByName",
         "produces": [
           "text/plain",
           "application/json",
@@ -2432,7 +2432,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/GruntTasking"
+              "$ref": "#/definitions/MofoTasking"
             }
           }
         }
@@ -5313,7 +5313,7 @@
   "definitions": {
     "CommandOutput": {
       "required": [
-        "gruntCommandId"
+        "mofoCommandId"
       ],
       "type": "object",
       "properties": {
@@ -5324,7 +5324,7 @@
         "output": {
           "type": "string"
         },
-        "gruntCommandId": {
+        "mofoCommandId": {
           "format": "int32",
           "type": "integer"
         }
@@ -5438,7 +5438,7 @@
         }
       }
     },
-    "CovenantUser": {
+    "LemonSqueezyUser": {
       "type": "object",
       "properties": {
         "themeId": {
@@ -5497,7 +5497,7 @@
         }
       }
     },
-    "CovenantUserRegister": {
+    "LemonSqueezyUserRegister": {
       "required": [
         "confirmPassword",
         "password",
@@ -5519,7 +5519,7 @@
         }
       }
     },
-    "CovenantUserLogin": {
+    "LemonSqueezyUserLogin": {
       "required": [
         "password",
         "userName"
@@ -5537,7 +5537,7 @@
         }
       }
     },
-    "CovenantUserLoginResult": {
+    "LemonSqueezyUserLoginResult": {
       "type": "object",
       "properties": {
         "success": {
@@ -5972,7 +5972,7 @@
         "connectAddresses",
         "connectPort",
         "description",
-        "guid",
+        "someid",
         "listenerTypeId",
         "name",
         "profileId",
@@ -5989,7 +5989,7 @@
           "minLength": 0,
           "type": "string"
         },
-        "guid": {
+        "someid": {
           "maxLength": 100,
           "minLength": 0,
           "pattern": "^[a-zA-Z0-9]*$",
@@ -6087,7 +6087,7 @@
         "modelAsString": false
       }
     },
-    "GruntStatus": {
+    "MofoStatus": {
       "enum": [
         "Uninitialized",
         "Stage0",
@@ -6101,7 +6101,7 @@
       ],
       "type": "string",
       "x-ms-enum": {
-        "name": "GruntStatus",
+        "name": "MofoStatus",
         "modelAsString": false
       }
     },
@@ -6119,7 +6119,7 @@
         "modelAsString": false
       }
     },
-    "GruntTaskAuthor": {
+    "MofoTaskAuthor": {
       "type": "object",
       "properties": {
         "id": {
@@ -6135,20 +6135,20 @@
         "link": {
           "type": "string"
         },
-        "gruntTasks": {
+        "mofoTasks": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/GruntTask"
+            "$ref": "#/definitions/MofoTask"
           }
         }
       }
     },
-    "GruntTaskingType": {
+    "MofoTaskingType": {
       "enum": [
         "Assembly",
         "SetDelay",
-        "SetJitter",
-        "SetConnectAttempts",
+        "SetJItter",
+        "SetConneCTAttEmpts",
         "SetKillDate",
         "Exit",
         "Connect",
@@ -6158,7 +6158,7 @@
       ],
       "type": "string",
       "x-ms-enum": {
-        "name": "GruntTaskingType",
+        "name": "MofoTaskingType",
         "modelAsString": false
       }
     },
@@ -6221,7 +6221,7 @@
         }
       }
     },
-    "GruntTaskOption": {
+    "MofoTaskOption": {
       "type": "object",
       "properties": {
         "id": {
@@ -6255,13 +6255,13 @@
         "fileOption": {
           "type": "boolean"
         },
-        "gruntTaskId": {
+        "mofoTaskId": {
           "format": "int32",
           "type": "integer"
         }
       }
     },
-    "GruntTask": {
+    "MofoTask": {
       "required": [
         "name"
       ],
@@ -6276,7 +6276,7 @@
           "type": "integer"
         },
         "author": {
-          "$ref": "#/definitions/GruntTaskAuthor"
+          "$ref": "#/definitions/MofoTaskAuthor"
         },
         "name": {
           "type": "string"
@@ -6309,7 +6309,7 @@
           "type": "boolean"
         },
         "taskingType": {
-          "$ref": "#/definitions/GruntTaskingType"
+          "$ref": "#/definitions/MofoTaskingType"
         },
         "referenceSourceLibraries": {
           "type": "array",
@@ -6341,12 +6341,12 @@
         "options": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/GruntTaskOption"
+            "$ref": "#/definitions/MofoTaskOption"
           }
         }
       }
     },
-    "GruntTaskingStatus": {
+    "MofoTaskingStatus": {
       "enum": [
         "Uninitialized",
         "Tasked",
@@ -6356,14 +6356,14 @@
       ],
       "type": "string",
       "x-ms-enum": {
-        "name": "GruntTaskingStatus",
+        "name": "MofoTaskingStatus",
         "modelAsString": false
       }
     },
-    "GruntTasking": {
+    "MofoTasking": {
       "required": [
-        "gruntId",
-        "gruntTaskId",
+        "mofoId",
+        "mofoTaskId",
         "name"
       ],
       "type": "object",
@@ -6375,22 +6375,22 @@
         "name": {
           "type": "string"
         },
-        "gruntId": {
+        "mofoId": {
           "format": "int32",
           "type": "integer"
         },
-        "grunt": {
-          "$ref": "#/definitions/Grunt"
+        "mofo": {
+          "$ref": "#/definitions/Mofo"
         },
-        "gruntTaskId": {
+        "mofoTaskId": {
           "format": "int32",
           "type": "integer"
         },
-        "gruntTask": {
-          "$ref": "#/definitions/GruntTask"
+        "mofoTask": {
+          "$ref": "#/definitions/MofoTask"
         },
         "type": {
-          "$ref": "#/definitions/GruntTaskingType"
+          "$ref": "#/definitions/MofoTaskingType"
         },
         "parameters": {
           "type": "array",
@@ -6399,7 +6399,7 @@
           }
         },
         "status": {
-          "$ref": "#/definitions/GruntTaskingStatus"
+          "$ref": "#/definitions/MofoTaskingStatus"
         },
         "taskingTime": {
           "format": "date-time",
@@ -6409,13 +6409,13 @@
           "format": "date-time",
           "type": "string"
         },
-        "gruntCommandId": {
+        "mofoCommandId": {
           "format": "int32",
           "type": "integer"
         }
       }
     },
-    "GruntCommand": {
+    "MofoCommand": {
       "required": [
         "command",
         "commandOutputId",
@@ -6446,22 +6446,22 @@
           "type": "string"
         },
         "user": {
-          "$ref": "#/definitions/CovenantUser"
+          "$ref": "#/definitions/LemonSqueezyUser"
         },
-        "gruntTaskingId": {
+        "mofoTaskingId": {
           "format": "int32",
           "type": "integer"
         },
-        "gruntTasking": {
-          "$ref": "#/definitions/GruntTasking"
+        "mofoTasking": {
+          "$ref": "#/definitions/MofoTasking"
         },
-        "gruntId": {
+        "mofoId": {
           "format": "int32",
           "type": "integer"
         }
       }
     },
-    "Grunt": {
+    "Mofo": {
       "required": [
         "connectAttempts",
         "delay",
@@ -6490,7 +6490,7 @@
         "originalServerGuid": {
           "type": "string"
         },
-        "guid": {
+        "someid": {
           "type": "string"
         },
         "children": {
@@ -6554,7 +6554,7 @@
           "$ref": "#/definitions/RuntimeIdentifier"
         },
         "status": {
-          "$ref": "#/definitions/GruntStatus"
+          "$ref": "#/definitions/MofoStatus"
         },
         "integrity": {
           "$ref": "#/definitions/IntegrityLevel"
@@ -6577,16 +6577,16 @@
         "operatingSystem": {
           "type": "string"
         },
-        "gruntSharedSecretPassword": {
+        "mofoSharedSecretPassword": {
           "type": "string"
         },
-        "gruntRSAPublicKey": {
+        "mofoRSAPublicKey": {
           "type": "string"
         },
-        "gruntNegotiatedSessionKey": {
+        "mofoNegotiatedSessKEy": {
           "type": "string"
         },
-        "gruntChallenge": {
+        "mofoChallenge": {
           "type": "string"
         },
         "activationTime": {
@@ -6600,10 +6600,10 @@
         "powerShellImport": {
           "type": "string"
         },
-        "gruntCommands": {
+        "mofoCommands": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/GruntCommand"
+            "$ref": "#/definitions/MofoCommand"
           }
         }
       }
@@ -7607,7 +7607,7 @@
         "connectAddresses",
         "connectPort",
         "description",
-        "guid",
+        "someid",
         "listenerTypeId",
         "name",
         "profileId",
@@ -7644,7 +7644,7 @@
           "minLength": 0,
           "type": "string"
         },
-        "guid": {
+        "someid": {
           "maxLength": 100,
           "minLength": 0,
           "pattern": "^[a-zA-Z0-9]*$",
@@ -7711,7 +7711,7 @@
         "connectAddresses",
         "connectPort",
         "description",
-        "guid",
+        "someid",
         "listenerTypeId",
         "name",
         "profileId",
@@ -7737,7 +7737,7 @@
           "minLength": 0,
           "type": "string"
         },
-        "guid": {
+        "someid": {
           "maxLength": 100,
           "minLength": 0,
           "pattern": "^[a-zA-Z0-9]*$",

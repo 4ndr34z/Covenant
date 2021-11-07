@@ -1,14 +1,14 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-using Covenant.Models.Listeners;
+using LemonSqueezy.Models.Listeners;
 
-namespace Covenant.Models.Launchers
+namespace LemonSqueezy.Models.Launchers
 {
     public class MshtaLauncher : ScriptletLauncher
     {
@@ -16,7 +16,7 @@ namespace Covenant.Models.Launchers
         {
             this.Name = "Mshta";
             this.Type = LauncherType.Mshta;
-            this.Description = "Uses mshta.exe to launch a Grunt using a COM activated Delegate and ActiveXObjects (ala DotNetToJScript). Please note that DotNetToJScript-based launchers may not work on Windows 10 and Windows Server 2016.";
+            this.Description = "Uses mshta.exe to launch a Mofo using a COM activated Delegate and ActiveXObjects (ala DotNetToJScript). Please note that DotNetToJScript-based launchers may not work on Windows 10 and Windows Server 2016.";
             this.ScriptType = ScriptletType.TaggedScript;
             this.OutputKind = OutputKind.DynamicallyLinkedLibrary;
             this.CompressStager = false;

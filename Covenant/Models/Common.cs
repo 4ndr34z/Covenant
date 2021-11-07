@@ -3,9 +3,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-using Covenant.Core;
+using LemonSqueezy.Core;
 
-namespace Covenant.Models
+namespace LemonSqueezy.Models
 {
     public interface IYamlSerializable<T>
     {

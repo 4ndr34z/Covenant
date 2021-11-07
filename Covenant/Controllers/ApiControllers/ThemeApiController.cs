@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System.Threading.Tasks;
@@ -8,18 +8,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 
-using Covenant.Core;
-using Covenant.Models.Covenant;
+using LemonSqueezy.Core;
+using LemonSqueezy.Models.LemonSqueezy;
 
-namespace Covenant.Controllers.ApiControllers
+namespace LemonSqueezy.Controllers.ApiControllers
 {
     [ApiController, Route("api/themes"), Authorize(Policy = "RequireJwtBearer")]
     public class ThemeApiController : Controller
     {
-        private readonly ICovenantService _service;
-        private readonly UserManager<CovenantUser> _userManager;
+        private readonly ILemonSqueezyService _service;
+        private readonly UserManager<LemonSqueezyUser> _userManager;
 
-        public ThemeApiController(ICovenantService service, UserManager<CovenantUser> userManager)
+        public ThemeApiController(ILemonSqueezyService service, UserManager<LemonSqueezyUser> userManager)
         {
             _service = service;
             _userManager = userManager;

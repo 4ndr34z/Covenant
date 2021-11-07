@@ -373,7 +373,7 @@
     Installs an autorun value in HKCU or HKLM to execute a payload.
 
     	TargetHive: Target hive to install autorun. Specify "CurrentUser" for HKCU and "LocalMachine" for HKLM.
-    	Value: Value to set in the registry. E.g. "C:\Example\GruntStager.exe"
+    	Value: Value to set in the registry. E.g. "C:\Example\MofoStager.exe"
     	Name: Name for the registy value.E.g. "Updater".
   Author: 
       Name: Daniel Duggan
@@ -431,7 +431,7 @@
     DisplayInCommand: true
     FileOption: false
   - Name: Value
-    Value: C:\Example\GruntStager.exe
+    Value: C:\Example\MofoStager.exe
     DefaultValue: ''
     Description: Value to set in the registry.
     SuggestedValues: []

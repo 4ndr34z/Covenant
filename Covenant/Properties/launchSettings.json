@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Covenant": {
+    "LemonSqueezy": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

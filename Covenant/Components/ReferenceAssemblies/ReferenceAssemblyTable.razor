@@ -1,10 +1,10 @@
 ﻿@using Microsoft.JSInterop
-@using Covenant.Core
-@using Covenant.Models.Grunts
-@using Covenant.Components.Shared
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+@using LemonSqueezy.Components.Shared
 @inject IJSRuntime IJSRuntime
 
-<CovenantTable TItem="ReferenceAssembly" Items="ReferenceAssemblies.ToList()" SearchRow="IsRowDisplayed"
+<LemonSqueezyTable TItem="ReferenceAssembly" Items="ReferenceAssemblies.ToList()" SearchRow="IsRowDisplayed"
                IsSearchable="IsSearchable" IsSortable="IsSortable" IsPaginated="IsPaginated" PageLength="PageLength" class="table table-hover">
     <TableHeader>
         <SortableTableHeader TItem="ReferenceAssembly" TItem2="string" GetSortableProperty="(assembly) => assembly.Name">
@@ -24,7 +24,7 @@
             <td>@assembly.DotNetVersion</td>
         </tr>
     </TableRow>
-</CovenantTable>
+</LemonSqueezyTable>
 
 @code {
     [Parameter]

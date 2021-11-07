@@ -2,15 +2,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
-using Covenant.Models.Covenant;
+using LemonSqueezy.Models.LemonSqueezy;
 
-namespace Covenant.Pages
+namespace LemonSqueezy.Pages
 {
     public class LogoutModel : PageModel
     {
-        private readonly SignInManager<CovenantUser> _signInManager;
+        private readonly SignInManager<LemonSqueezyUser> _signInManager;
 
-        public LogoutModel(SignInManager<CovenantUser> signInManager)
+        public LogoutModel(SignInManager<LemonSqueezyUser> signInManager)
         {
             _signInManager = signInManager;
         }

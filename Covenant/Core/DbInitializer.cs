@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
@@ -14,17 +14,17 @@ using Microsoft.AspNetCore.Identity;
 
 using YamlDotNet.Serialization;
 
-using Covenant.Models;
-using Covenant.Models.Covenant;
-using Covenant.Models.Launchers;
-using Covenant.Models.Listeners;
-using Covenant.Models.Grunts;
+using LemonSqueezy.Models;
+using LemonSqueezy.Models.LemonSqueezy;
+using LemonSqueezy.Models.Launchers;
+using LemonSqueezy.Models.Listeners;
+using LemonSqueezy.Models.Mofos;
 
-namespace Covenant.Core
+namespace LemonSqueezy.Core
 {
     public static class DbInitializer
     {
-        public async static Task Initialize(ICovenantService service, CovenantContext context, RoleManager<IdentityRole> roleManager, ConcurrentDictionary<int, CancellationTokenSource> ListenerCancellationTokens)
+        public async static Task Initialize(ILemonSqueezyService service, LemonSqueezyContext context, RoleManager<IdentityRole> roleManager, ConcurrentDictionary<int, CancellationTokenSource> ListenerCancellationTokens)
         {
             await InitializeListeners(service, context, ListenerCancellationTokens);
             await InitializeImplantTemplates(service, context);
@@ -34,7 +34,7 @@ namespace Covenant.Core
             await InitializeThemes(context);
         }
 
-        public async static Task InitializeImplantTemplates(ICovenantService service, CovenantContext context)
+        public async static Task InitializeImplantTemplates(ILemonSqueezyService service, LemonSqueezyContext context)
         {
             if (!context.ImplantTemplates.Any())
             {
@@ -42,7 +42,7 @@ namespace Covenant.Core
                 {
                     new ImplantTemplate
                     {
-                        Name = "GruntHTTP",
+                        Name = "MofoHTTP",
                         Description = "A Windows implant written in C# that communicates over HTTP.",
                         Language = ImplantLanguage.CSharp,
                         CommType = CommunicationType.HTTP,
@@ -51,7 +51,7 @@ namespace Covenant.Core
                     },
                     new ImplantTemplate
                     {
-                        Name = "GruntSMB",
+                        Name = "MofoSMB",
                         Description = "A Windows implant written in C# that communicates over SMB.",
                         Language = ImplantLanguage.CSharp,
                         CommType = CommunicationType.SMB,
@@ -60,7 +60,7 @@ namespace Covenant.Core
                     },
                     new ImplantTemplate
                     {
-                        Name = "GruntBridge",
+                        Name = "MofoBridge",
                         Description = "A customizable implant written in C# that communicates with a custom C2Bridge.",
                         Language = ImplantLanguage.CSharp,
                         CommType = CommunicationType.Bridge,
@@ -84,22 +84,22 @@ namespace Covenant.Core
                     new ListenerTypeImplantTemplate
                     {
                         ListenerType = await service.GetListenerTypeByName("HTTP"),
-                        ImplantTemplate = await service.GetImplantTemplateByName("GruntHTTP")
+                        ImplantTemplate = await service.GetImplantTemplateByName("MofoHTTP")
                     },
                     new ListenerTypeImplantTemplate
                     {
                         ListenerType = await service.GetListenerTypeByName("HTTP"),
-                        ImplantTemplate = await service.GetImplantTemplateByName("GruntSMB")
+                        ImplantTemplate = await service.GetImplantTemplateByName("MofoSMB")
                     },
                     new ListenerTypeImplantTemplate
                     {
                         ListenerType = await service.GetListenerTypeByName("Bridge"),
-                        ImplantTemplate = await service.GetImplantTemplateByName("GruntBridge")
+                        ImplantTemplate = await service.GetImplantTemplateByName("MofoBridge")
                     },
                     new ListenerTypeImplantTemplate
                     {
                         ListenerType = await service.GetListenerTypeByName("Bridge"),
-                        ImplantTemplate = await service.GetImplantTemplateByName("GruntSMB")
+                        ImplantTemplate = await service.GetImplantTemplateByName("MofoSMB")
                     },
                     new ListenerTypeImplantTemplate
                     {
@@ -110,7 +110,7 @@ namespace Covenant.Core
             }
         }
 
-        public async static Task InitializeListeners(ICovenantService service, CovenantContext context, ConcurrentDictionary<int, CancellationTokenSource> ListenerCancellationTokens)
+        public async static Task InitializeListeners(ILemonSqueezyService service, LemonSqueezyContext context, ConcurrentDictionary<int, CancellationTokenSource> ListenerCancellationTokens)
         {
             if (!context.ListenerTypes.Any())
             {
@@ -121,7 +121,7 @@ namespace Covenant.Core
             }
             if (!context.Profiles.Any())
             {
-                string[] files = Directory.GetFiles(Common.CovenantProfileDirectory, "*.yaml", SearchOption.AllDirectories);
+                string[] files = Directory.GetFiles(Common.LemonSqueezyProfileDirectory, "*.yaml", SearchOption.AllDirectories);
                 HttpProfile[] httpProfiles = files.Where(F => F.Contains("HTTP", StringComparison.CurrentCultureIgnoreCase))
                     .Select(F => HttpProfile.Create(F))
                     .ToArray();
@@ -140,7 +140,7 @@ namespace Covenant.Core
             }
         }
 
-        public async static Task InitializeLaunchers(ICovenantService service, CovenantContext context)
+        public async static Task InitializeLaunchers(ILemonSqueezyService service, LemonSqueezyContext context)
         {
             if (!context.Launchers.Any())
             {
@@ -161,27 +161,27 @@ namespace Covenant.Core
             }
         }
 
-        public async static Task InitializeTasks(ICovenantService service, CovenantContext context)
+        public async static Task InitializeTasks(ILemonSqueezyService service, LemonSqueezyContext context)
         {
             if (!context.ReferenceAssemblies.Any())
             {
-                List<ReferenceAssembly> ReferenceAssemblies = Directory.GetFiles(Common.CovenantAssemblyReferenceNet35Directory).Select(R =>
+                List<ReferenceAssembly> ReferenceAssemblies = Directory.GetFiles(Common.LemonSqueezyAssemblyReferenceNet35Directory).Select(R =>
                 {
                     FileInfo info = new FileInfo(R);
                     return new ReferenceAssembly
                     {
                         Name = info.Name,
-                        Location = info.FullName.Replace(Common.CovenantAssemblyReferenceDirectory, ""),
+                        Location = info.FullName.Replace(Common.LemonSqueezyAssemblyReferenceDirectory, ""),
                         DotNetVersion = Common.DotNetVersion.Net35
                     };
                 }).ToList();
-                Directory.GetFiles(Common.CovenantAssemblyReferenceNet40Directory).ToList().ForEach(R =>
+                Directory.GetFiles(Common.LemonSqueezyAssemblyReferenceNet40Directory).ToList().ForEach(R =>
                 {
                     FileInfo info = new FileInfo(R);
                     ReferenceAssemblies.Add(new ReferenceAssembly
                     {
                         Name = info.Name,
-                        Location = info.FullName.Replace(Common.CovenantAssemblyReferenceDirectory, ""),
+                        Location = info.FullName.Replace(Common.LemonSqueezyAssemblyReferenceDirectory, ""),
                         DotNetVersion = Common.DotNetVersion.Net40
                     });
                 });
@@ -189,13 +189,13 @@ namespace Covenant.Core
             }
             if (!context.EmbeddedResources.Any())
             {
-                EmbeddedResource[] EmbeddedResources = Directory.GetFiles(Common.CovenantEmbeddedResourcesDirectory).Select(R =>
+                EmbeddedResource[] EmbeddedResources = Directory.GetFiles(Common.LemonSqueezyEmbeddedResourcesDirectory).Select(R =>
                 {
                     FileInfo info = new FileInfo(R);
                     return new EmbeddedResource
                     {
                         Name = info.Name,
-                        Location = info.FullName.Replace(Common.CovenantEmbeddedResourcesDirectory, "")
+                        Location = info.FullName.Replace(Common.LemonSqueezyEmbeddedResourcesDirectory, "")
                     };
                 }).ToArray();
                 await service.CreateEmbeddedResources(EmbeddedResources);
@@ -233,7 +233,7 @@ namespace Covenant.Core
                     // new ReferenceSourceLibrary
                     // {
                     //     Name = "SharpChrome", Description = "SharpChrome is a C# port of some Mimikatz DPAPI functionality targeting Google Chrome.",
-                    //     Location = Common.CovenantReferenceSourceLibraries + "SharpDPAPI" + Path.DirectorySeparatorChar + "SharpChrome" + Path.DirectorySeparatorChar,
+                    //     Location = Common.LemonSqueezyReferenceSourceLibraries + "SharpDPAPI" + Path.DirectorySeparatorChar + "SharpChrome" + Path.DirectorySeparatorChar,
                     //     SupportedDotNetVersions = new List<Common.DotNetVersion> { Common.DotNetVersion.Net35, Common.DotNetVersion.Net40 }
                     // },
                     new ReferenceSourceLibrary
@@ -396,20 +396,20 @@ namespace Covenant.Core
             }
             #endregion
             
-            if (!context.GruntTasks.Any())
+            if (!context.MofoTasks.Any())
             {
-                List<string> files = Directory.GetFiles(Common.CovenantTaskDirectory)
+                List<string> files = Directory.GetFiles(Common.LemonSqueezyTaskDirectory)
                     .Where(F => F.EndsWith(".yaml", StringComparison.CurrentCultureIgnoreCase))
                     .ToList();
                 IDeserializer deserializer = new DeserializerBuilder().Build();
                 foreach (string file in files)
                 {
                     string yaml = File.ReadAllText(file);
-                    List<SerializedGruntTask> serialized = deserializer.Deserialize<List<SerializedGruntTask>>(yaml);
-                    List<GruntTask> tasks = serialized.Select(S => new GruntTask().FromSerializedGruntTask(S)).ToList();
-                    foreach (GruntTask task in tasks)
+                    List<SerializedMofoTask> serialized = deserializer.Deserialize<List<SerializedMofoTask>>(yaml);
+                    List<MofoTask> tasks = serialized.Select(S => new MofoTask().FromSerializedMofoTask(S)).ToList();
+                    foreach (MofoTask task in tasks)
                     {
-                        await service.CreateGruntTask(task);
+                        await service.CreateMofoTask(task);
                     }
                 }
             }
@@ -427,7 +427,7 @@ namespace Covenant.Core
             }
         }
 
-        public async static Task InitializeThemes(CovenantContext context)
+        public async static Task InitializeThemes(LemonSqueezyContext context)
         {
             if (!context.Themes.Any())
             {
@@ -436,7 +436,7 @@ namespace Covenant.Core
                     new Theme
                     {
                         Name = "Classic Theme",
-                        Description = "Covenant's standard, default theme.",
+                        Description = "LemonSqueezy's standard, default theme.",
 
                         BackgroundColor = "#ffffff",
                         BackgroundTextColor = "#212529",

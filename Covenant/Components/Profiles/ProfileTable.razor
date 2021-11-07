@@ -2,13 +2,13 @@
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Components.Authorization
 
-@using Covenant.Core 
-@using Covenant.Models.Listeners
-@using Covenant.Components.Shared
+@using LemonSqueezy.Core 
+@using LemonSqueezy.Models.Listeners
+@using LemonSqueezy.Components.Shared
 @inject IJSRuntime IJSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<CovenantTable TItem="Profile" Items="Profiles.ToList()" SearchRow="IsRowDisplayed"
+<LemonSqueezyTable TItem="Profile" Items="Profiles.ToList()" SearchRow="IsRowDisplayed"
                IsSearchable="IsSearchable" IsSortable="IsSortable" IsPaginated="IsPaginated" PageLength="PageLength" class="table table-hover">
     <TableHeader>
         <SortableTableHeader TItem="Profile" TItem2="string" GetSortableProperty="(profile) => profile.Name">
@@ -39,7 +39,7 @@
             <td>@profile.Type</td>
         </tr>
     </TableRow>
-</CovenantTable>
+</LemonSqueezyTable>
 
 @code {
     [Parameter]

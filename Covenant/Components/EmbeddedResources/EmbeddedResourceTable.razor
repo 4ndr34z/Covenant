@@ -1,9 +1,9 @@
 ﻿@using Microsoft.JSInterop
-@using Covenant.Models.Grunts
-@using Covenant.Components.Shared
+@using LemonSqueezy.Models.Mofos
+@using LemonSqueezy.Components.Shared
 @inject IJSRuntime IJSRuntime
 
-<CovenantTable TItem="EmbeddedResource" Items="EmbeddedResources.ToList()" SearchRow="IsRowDisplayed"
+<LemonSqueezyTable TItem="EmbeddedResource" Items="EmbeddedResources.ToList()" SearchRow="IsRowDisplayed"
                IsSearchable="IsSearchable" IsSortable="IsSortable" IsPaginated="IsPaginated" PageLength="PageLength" class="table table-hover">
     <TableHeader>
         <SortableTableHeader TItem="EmbeddedResource" TItem2="string" GetSortableProperty="(resource) => resource.Name">
@@ -23,7 +23,7 @@
             <td>@resource.Location</td>
         </tr>
     </TableRow>
-</CovenantTable>
+</LemonSqueezyTable>
 
 @code {
     [Parameter]

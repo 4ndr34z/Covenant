@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System.Threading.Tasks;
@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
 
-using Covenant.Core;
+using LemonSqueezy.Core;
 
-namespace Covenant.Hubs
+namespace LemonSqueezy.Hubs
 {
     [Authorize]
     public class EventHub : Hub

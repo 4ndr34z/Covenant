@@ -1,0 +1,125 @@
+﻿@page "/mofo"
+@page "/mofo/index"
+@attribute [Authorize(Roles = "User, Administrator")]
+@inherits OwningComponentBase<ILemonSqueezyService>
+@implements IDisposable
+
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Authorization
+
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+@inject IJSRuntime IJSRuntime
+@inject INotificationService INotificationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+    <h1 class="h2">Mofos</h1>
+</div>
+
+<MofoTable @bind-Mofos="Mofos" class="p-2" OnSelectTerminal="OnSelectTerminal">
+    <ButtonTray>
+        @if (this.SomeHidden && this.Hidden)
+        {
+            <button type="button" class="btn btn-info" @onclick="OnToggleHide">
+                <span class="fe fe-eye"></span>
+            </button>
+        }
+        else if (this.SomeHidden)
+        {
+            <button type="button" class="btn btn-info" @onclick="OnToggleHide">
+                <span class="fe fe-eye-off"></span>
+            </button>
+        }
+    </ButtonTray>
+</MofoTable>
+
+<TabbedTerminals @ref="TabbedTerminals" @bind-TerminalMofos="TerminalMofos" OnRemoveTerminal="OnRemoveTerminal"/>
+
+@code {
+    [Parameter]
+    public List<Mofo> Mofos { get; set; }
+    private List<Mofo> UnfilteredMofos { get; set; }
+
+    private TabbedTerminals TabbedTerminals { get; set; }
+    private List<Mofo> TerminalMofos { get; set; } = new List<Mofo>();
+
+    private bool SomeHidden { get; set; } = false;
+    private bool Hidden { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.UnfilteredMofos = this.Mofos ?? (await Service.GetMofos())
+            .OrderByDescending(G => G.LastCheckIn)
+            .ToList();
+        this.FilterMofos();
+        Service.DisposeContext();
+        this.INotificationService.OnCreateMofo += OnCreateMofo;
+        this.INotificationService.OnEditMofo += OnEditMofo;
+    }
+
+    private void FilterMofos()
+    {
+        this.SomeHidden = this.UnfilteredMofos.Any(G => G.Status == MofoStatus.Hidden);
+        this.Mofos = this.UnfilteredMofos
+            .Where(G => (!this.Hidden || G.Status != MofoStatus.Hidden) && G.Status != MofoStatus.Uninitialized)
+            .ToList();
+    }
+
+    public void Dispose()
+    {
+        this.INotificationService.OnCreateMofo -= OnCreateMofo;
+        this.INotificationService.OnEditMofo -= OnEditMofo;
+    }
+
+    private void OnCreateMofo(object sender, Mofo mofo)
+    {
+        this.UnfilteredMofos.Add(mofo);
+        if ((!this.Hidden || mofo.Status != MofoStatus.Hidden) && mofo.Status != MofoStatus.Uninitialized)
+        {
+            this.FilterMofos();
+            this.InvokeAsync(() => this.StateHasChanged());
+        }
+    }
+
+    private async void OnEditMofo(object sender, Mofo mofo)
+    {
+        if (mofo.ImplantTemplate == null)
+        {
+            mofo.ImplantTemplate = await Service.GetImplantTemplate(mofo.ImplantTemplateId);
+            Service.DisposeContext();
+        }
+        bool inDisplayedMofos = this.Mofos.Any(G => G.Id == mofo.Id);
+        if (inDisplayedMofos)
+        {
+            this.Mofos[this.Mofos.FindIndex(G => G.Id == mofo.Id)] = mofo;
+            await this.InvokeAsync(() => this.StateHasChanged());
+        }
+        if (this.UnfilteredMofos.Any(G => G.Id == mofo.Id))
+        {
+            this.UnfilteredMofos[this.UnfilteredMofos.FindIndex(G => G.Id == mofo.Id)] = mofo;
+            if (!inDisplayedMofos && (!this.Hidden || mofo.Status != MofoStatus.Hidden) && mofo.Status != MofoStatus.Uninitialized)
+            {
+                this.FilterMofos();
+                await this.InvokeAsync(() => this.StateHasChanged());
+            }
+        }
+    }
+
+    public void OnSelectTerminal(Mofo mofo)
+    {
+        this.TabbedTerminals.OnSelectTerminal(mofo);
+    }
+
+    public void OnRemoveTerminal(int number)
+    {
+        this.TerminalMofos.RemoveAt(number);
+    }
+
+    private void OnToggleHide()
+    {
+        this.Hidden = !this.Hidden;
+        this.FilterMofos();
+        this.StateHasChanged();
+    }
+}

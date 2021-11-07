@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
@@ -11,75 +11,75 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
-namespace Covenant.Core
+namespace LemonSqueezy.Core
 {
     public static class Common
     {
-        public static int CovenantDefaultAdminPort = 7443;
+        public static int LemonSqueezyDefaultAdminPort = 7443;
 
-        public static Encoding CovenantEncoding = Encoding.UTF8;
+        public static Encoding LemonSqueezyEncoding = Encoding.UTF8;
         public static int AesIVLength = 16;
         public static CipherMode AesCipherMode = CipherMode.CBC;
         public static PaddingMode AesPaddingMode = PaddingMode.PKCS7;
 
-        public static string CovenantDirectory = Assembly.GetExecutingAssembly().Location.Split("bin")[0].Split("Covenant.dll")[0];
-        public static string CovenantDataDirectory = CovenantDirectory + "Data" + Path.DirectorySeparatorChar;
-        public static string CovenantDatabaseFile = CovenantDataDirectory + "covenant.db";
-        public static string CovenantTempDirectory = CovenantDataDirectory + "Temp" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyDirectory = Assembly.GetExecutingAssembly().Location.Split("bin")[0].Split("LemonSqueezy.dll")[0];
+        public static string LemonSqueezyDataDirectory = LemonSqueezyDirectory + "Data" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyDatabaseFile = LemonSqueezyDataDirectory + "covenant.db";
+        public static string LemonSqueezyTempDirectory = LemonSqueezyDataDirectory + "Temp" + Path.DirectorySeparatorChar;
 
-        public static string CovenantProfileDirectory = CovenantDataDirectory + "Profiles" + Path.DirectorySeparatorChar;
-        public static string CovenantDefaultHttpProfile = CovenantProfileDirectory + "DefaultHttpProfile.yaml";
+        public static string LemonSqueezyProfileDirectory = LemonSqueezyDataDirectory + "Profiles" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyDefaultHttpProfile = LemonSqueezyProfileDirectory + "DefaultHttpProfile.yaml";
 
-        public static string CovenantDownloadDirectory = CovenantDataDirectory + "Downloads" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyDownloadDirectory = LemonSqueezyDataDirectory + "Downloads" + Path.DirectorySeparatorChar;
 
-        public static string CovenantAssemblyReferenceDirectory = CovenantDataDirectory + "AssemblyReferences" + Path.DirectorySeparatorChar;
-        public static string CovenantAssemblyReferenceNet35Directory = CovenantAssemblyReferenceDirectory + "net35" + Path.DirectorySeparatorChar;
-        public static string CovenantAssemblyReferenceNet40Directory = CovenantAssemblyReferenceDirectory + "net40" + Path.DirectorySeparatorChar;
-        public static string CovenantEmbeddedResourcesDirectory = CovenantDataDirectory + "EmbeddedResources" + Path.DirectorySeparatorChar;
-        public static string CovenantReferenceSourceLibraries = CovenantDataDirectory + "ReferenceSourceLibraries" + Path.DirectorySeparatorChar;
-        public static string CovenantSharpSploitDirectory = CovenantReferenceSourceLibraries + "SharpSploit" + Path.DirectorySeparatorChar;
-        public static string CovenantRubeusDirectory = CovenantReferenceSourceLibraries + "Rubeus" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyAssemblyReferenceDirectory = LemonSqueezyDataDirectory + "AssemblyReferences" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyAssemblyReferenceNet35Directory = LemonSqueezyAssemblyReferenceDirectory + "net35" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyAssemblyReferenceNet40Directory = LemonSqueezyAssemblyReferenceDirectory + "net40" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyEmbeddedResourcesDirectory = LemonSqueezyDataDirectory + "EmbeddedResources" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyReferenceSourceLibraries = LemonSqueezyDataDirectory + "ReferenceSourceLibraries" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezySharpSploitDirectory = LemonSqueezyReferenceSourceLibraries + "SharpSploit" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyRubeusDirectory = LemonSqueezyReferenceSourceLibraries + "Rubeus" + Path.DirectorySeparatorChar;
 
-        public static string CovenantTaskDirectory = CovenantDataDirectory + "Tasks" + Path.DirectorySeparatorChar;
-        public static string CovenantTaskCSharpDirectory = CovenantTaskDirectory + "CSharp" + Path.DirectorySeparatorChar;
-        public static string CovenantTaskCSharpNetCoreApp30Directory = CovenantTaskCSharpDirectory + "netcoreapp3.0" + Path.DirectorySeparatorChar;
-        public static string CovenantTaskCSharpCompiledDirectory = CovenantTaskCSharpDirectory + "Compiled" + Path.DirectorySeparatorChar;
-        public static string CovenantTaskCSharpCompiledNet35Directory = CovenantTaskCSharpCompiledDirectory + "net35" + Path.DirectorySeparatorChar;
-        public static string CovenantTaskCSharpCompiledNet40Directory = CovenantTaskCSharpCompiledDirectory + "net40" + Path.DirectorySeparatorChar;
-        public static string CovenantTaskCSharpCompiledNetCoreApp30Directory = CovenantTaskCSharpCompiledDirectory + "netcoreapp3.0" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyTaskDirectory = LemonSqueezyDataDirectory + "Tasks" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyTaskCSharpDirectory = LemonSqueezyTaskDirectory + "CSharp" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyTaskCSharpNetCoreApp30Directory = LemonSqueezyTaskCSharpDirectory + "netcoreapp3.0" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyTaskCSharpCompiledDirectory = LemonSqueezyTaskCSharpDirectory + "Compiled" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyTaskCSharpCompiledNet35Directory = LemonSqueezyTaskCSharpCompiledDirectory + "net35" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyTaskCSharpCompiledNet40Directory = LemonSqueezyTaskCSharpCompiledDirectory + "net40" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyTaskCSharpCompiledNetCoreApp30Directory = LemonSqueezyTaskCSharpCompiledDirectory + "netcoreapp3.0" + Path.DirectorySeparatorChar;
 
-        public static string CovenantLogDirectory = CovenantDataDirectory + "Logs" + Path.DirectorySeparatorChar;
-        public static string CovenantLogFile = CovenantLogDirectory + "covenant.log";
-        public static string CovenantPrivateCertFile = CovenantDataDirectory + "covenant-dev-private.pfx";
-        public static string CovenantPublicCertFile = CovenantDataDirectory + "covenant-dev-public.cer";
-        public static string CovenantListenersDirectory = CovenantDataDirectory + "Listeners" + Path.DirectorySeparatorChar;
-        public static string CovenantLauncherDirectory = CovenantDataDirectory + "Launchers" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyLogDirectory = LemonSqueezyDataDirectory + "Logs" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyLogFile = LemonSqueezyLogDirectory + "covenant.log";
+        public static string LemonSqueezyPrivateCertFile = LemonSqueezyDataDirectory + "covenant-dev-private.pfx";
+        public static string LemonSqueezyPublicCertFile = LemonSqueezyDataDirectory + "covenant-dev-public.cer";
+        public static string LemonSqueezyListenersDirectory = LemonSqueezyDataDirectory + "Listeners" + Path.DirectorySeparatorChar;
+        public static string LemonSqueezyLauncherDirectory = LemonSqueezyDataDirectory + "Launchers" + Path.DirectorySeparatorChar;
 
-        public static string CovenantAppSettingsFile = CovenantDataDirectory + "appsettings.json";
-        public static string CovenantJwtKeyReplaceMessage = "[KEY USED TO SIGN/VERIFY JWT TOKENS, ALWAYS REPLACE THIS VALUE]";
+        public static string LemonSqueezyAppSettingsFile = LemonSqueezyDataDirectory + "appsettings.json";
+        public static string LemonSqueezyJwtKeyReplaceMessage = "[KEY USED TO SIGN/VERIFY JWT TOKENS, ALWAYS REPLACE THIS VALUE]";
 
         public static List<Compiler.Reference> DefaultNet35References = new List<Compiler.Reference>
         {
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet35Directory + "mscorlib.dll", Framework = DotNetVersion.Net35, Enabled = true },
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet35Directory + "System.dll", Framework = DotNetVersion.Net35, Enabled = true },
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet35Directory + "System.Core.dll", Framework = DotNetVersion.Net35, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet35Directory + "mscorlib.dll", Framework = DotNetVersion.Net35, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet35Directory + "System.dll", Framework = DotNetVersion.Net35, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet35Directory + "System.Core.dll", Framework = DotNetVersion.Net35, Enabled = true },
         };
 
         public static List<Compiler.Reference> DefaultNet40References = new List<Compiler.Reference>
         {
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet40Directory + "mscorlib.dll", Framework = DotNetVersion.Net40, Enabled = true },
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet40Directory + "System.dll", Framework = DotNetVersion.Net40, Enabled = true },
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet40Directory + "System.Core.dll", Framework = DotNetVersion.Net40, Enabled = true }
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet40Directory + "mscorlib.dll", Framework = DotNetVersion.Net40, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet40Directory + "System.dll", Framework = DotNetVersion.Net40, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet40Directory + "System.Core.dll", Framework = DotNetVersion.Net40, Enabled = true }
         };
 
         public static List<Compiler.Reference> DefaultNetFrameworkReferences = new List<Compiler.Reference>
         {
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet35Directory + "mscorlib.dll", Framework = DotNetVersion.Net35, Enabled = true },
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet40Directory + "mscorlib.dll", Framework = DotNetVersion.Net40, Enabled = true },
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet35Directory + "System.dll", Framework = DotNetVersion.Net35, Enabled = true },
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet40Directory + "System.dll", Framework = DotNetVersion.Net40, Enabled = true },
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet35Directory + "System.Core.dll", Framework = DotNetVersion.Net35, Enabled = true },
-            new Compiler.Reference { File = CovenantAssemblyReferenceNet40Directory + "System.Core.dll", Framework = DotNetVersion.Net40, Enabled = true }
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet35Directory + "mscorlib.dll", Framework = DotNetVersion.Net35, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet40Directory + "mscorlib.dll", Framework = DotNetVersion.Net40, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet35Directory + "System.dll", Framework = DotNetVersion.Net35, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet40Directory + "System.dll", Framework = DotNetVersion.Net40, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet35Directory + "System.Core.dll", Framework = DotNetVersion.Net35, Enabled = true },
+            new Compiler.Reference { File = LemonSqueezyAssemblyReferenceNet40Directory + "System.Core.dll", Framework = DotNetVersion.Net40, Enabled = true }
         };
 
         public static List<Compiler.Reference> DefaultReferencesNetCore { get; set; } = new List<Compiler.Reference>

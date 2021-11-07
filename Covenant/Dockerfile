@@ -9,4 +9,4 @@ WORKDIR /app
 COPY --from=build /app/out .
 COPY ./Data ./Data
 EXPOSE 7443 80 443
-ENTRYPOINT ["dotnet", "Covenant.dll"]
+ENTRYPOINT ["dotnet", "LemonSqueezy.dll"]

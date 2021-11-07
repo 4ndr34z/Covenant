@@ -1,5 +1,5 @@
 ﻿# Author: Ryan Cobb (@cobbr_io)
-# Project: Covenant (https://github.com/cobbr/Covenant)
+# Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 # License: GNU GPLv3
 
 Name: TCPBridgeProfile
@@ -17,9 +17,9 @@ MessageTransform: |-
         }
     }
 ReadFormat: |-
-    {DATA},{GUID}
+    {DATA},{SOMEID}
 WriteFormat: |-
-    {DATA},{GUID}
+    {DATA},{SOMEID}
 BridgeMessengerCode: |-
     public enum MessageType
     {
@@ -57,18 +57,18 @@ BridgeMessengerCode: |-
         public string Authenticator { get; set; } = "";
         public EventHandler<MessageEventArgs> UpstreamEventHandler { get; set; }
     
-        private string CovenantURI { get; }
+        private string LemonSqueezyURI { get; }
         private object _tcpLock = new object();
         private string WriteFormat { get; set; }
         public TcpClient client { get; set; }
         public Stream stream { get; set; }
 
-        public BridgeMessenger(string CovenantURI, string Identifier, string WriteFormat)
+        public BridgeMessenger(string LemonSqueezyURI, string Identifier, string WriteFormat)
         {
-            this.CovenantURI = CovenantURI;
+            this.LemonSqueezyURI = LemonSqueezyURI;
             this.Identifier = Identifier;
-            this.Hostname = CovenantURI.Split(':')[0];
-            this.Port = int.Parse(CovenantURI.Split(':')[1]);
+            this.Hostname = LemonSqueezyURI.Split(':')[0];
+            this.Port = int.Parse(LemonSqueezyURI.Split(':')[1]);
             this.WriteFormat = WriteFormat;
         }
 
@@ -114,7 +114,7 @@ BridgeMessengerCode: |-
             try
             {
                 this.client = new TcpClient();
-                client.Connect(IPAddress.Parse(CovenantURI.Split(':')[0]), int.Parse(CovenantURI.Split(':')[1]));
+                client.Connect(IPAddress.Parse(LemonSqueezyURI.Split(':')[0]), int.Parse(LemonSqueezyURI.Split(':')[1]));
                 client.ReceiveTimeout = 0;
                 client.SendTimeout = 0;
                 this.stream = client.GetStream();
@@ -146,28 +146,28 @@ BridgeMessengerCode: |-
         private byte[] ReadBytes()
         {
             byte[] size = new byte[4];
-            int totalReadBytes = 0;
+            int ToTalReaDBytes = 0;
             int readBytes = 0;
             do
             {
                 readBytes = this.stream.Read(size, 0, size.Length);
                 if (readBytes == 0) { return null; }
-                totalReadBytes += readBytes;
-            } while (totalReadBytes < size.Length);
+                ToTalReaDBytes += readBytes;
+            } while (ToTalReaDBytes < size.Length);
             int len = (size[0] << 24) + (size[1] << 16) + (size[2] << 8) + size[3];
 
             byte[] buffer = new byte[1024];
             using (var ms = new MemoryStream())
             {
-                totalReadBytes = 0;
+                ToTalReaDBytes = 0;
                 readBytes = 0;
                 do
                 {
                     readBytes = this.stream.Read(buffer, 0, buffer.Length);
                     if (readBytes == 0) { return null; }
                     ms.Write(buffer, 0, readBytes);
-                    totalReadBytes += readBytes;
-                } while (totalReadBytes < len);
+                    ToTalReaDBytes += readBytes;
+                } while (ToTalReaDBytes < len);
                 return ms.ToArray();
             }
         }

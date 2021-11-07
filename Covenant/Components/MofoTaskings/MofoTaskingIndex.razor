@@ -1,0 +1,23 @@
+﻿@page "/mofotasking"
+@page "/mofotasking/index"
+@attribute [Authorize(Roles = "User, Administrator")]
+@inherits OwningComponentBase<ILemonSqueezyService>
+
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+    <h1 class="h2">MofoTaskings</h1>
+</div>
+
+<MofoTaskingTable MofoTaskings="MofoTaskings" IsPaginated="true" PageLength="10" IsSearchable="true" IsSortable="true" />
+
+@code {
+    [Parameter]
+    public List<MofoTasking> MofoTaskings { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.MofoTaskings = this.MofoTaskings ?? (await Service.GetMofoTaskings()).ToList();
+    }
+}

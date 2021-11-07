@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
@@ -12,10 +12,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Newtonsoft.Json;
 
-using Covenant.Core;
-using Covenant.Models.Grunts;
+using LemonSqueezy.Core;
+using LemonSqueezy.Models.Mofos;
 
-namespace Covenant.Models.Listeners
+namespace LemonSqueezy.Models.Listeners
 {
     public class ListenerType
     {
@@ -42,7 +42,7 @@ namespace Covenant.Models.Listeners
         [Required, StringLength(100)]
         public string Name { get; set; } = Utilities.CreateShortGuid();
         [Required, StringLength(100), RegularExpression("^[a-zA-Z0-9]*$")]
-        public string GUID { get; set; } = Utilities.CreateShortGuid();
+        public string SOMEID { get; set; } = Utilities.CreateShortGuid();
         [Required]
         public string Description { get; set; } = "A generic listener.";
         [Required, RegularExpression(@"^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", ErrorMessage = "The field BindAddress must be an IPv4 Address.")]
@@ -63,15 +63,15 @@ namespace Covenant.Models.Listeners
 
         [Required]
         public ListenerStatus Status { get; set; } = ListenerStatus.Uninitialized;
-        public string CovenantUrl { get; set; }
-        public string CovenantToken { get; set; }
+        public string LemonSqueezyUrl { get; set; }
+        public string LemonSqueezyToken { get; set; }
 
         public DateTime StartTime { get; set; } = DateTime.MinValue;
 
         public virtual CancellationTokenSource Start() { return null; }
         public virtual void Stop(CancellationTokenSource cancellationTokenSource) { }
 
-        protected string ListenerDirectory { get { return Common.CovenantListenersDirectory + this.GUID + Path.DirectorySeparatorChar; } }
+        protected string ListenerDirectory { get { return Common.LemonSqueezyListenersDirectory + this.SOMEID + Path.DirectorySeparatorChar; } }
     }
 
     public class ListenerStartException : Exception

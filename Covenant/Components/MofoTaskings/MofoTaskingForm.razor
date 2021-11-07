@@ -1,0 +1,115 @@
+﻿@inherits OwningComponentBase<ILemonSqueezyService>
+
+@using Microsoft.JSInterop
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+@inject IJSRuntime IJSRuntime
+
+<form>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="Name">Name</label>
+            <input id="Name" name="Name" @bind="MofoTasking.Name" class="form-control" readonly>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="Mofo.Name">Mofo</label>
+            <a id="Mofo.Name" name="Mofo.Name" href="/mofo/interact/@MofoTasking.Mofo.Id" class="btn btn-secondary text-left w-100">
+                @MofoTasking.Mofo.Name
+            </a>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="MofoTask.Name">Task</label>
+            <a id="MofoTask.Name" name="MofoTask.Name" href="/mofotask/edit/@MofoTasking.MofoTask.Id" class="btn btn-secondary text-left w-100">
+                @MofoTasking.MofoTask.Name
+            </a>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="Status">Status</label><br />
+            <select id="Status" name="Status" @bind="MofoTasking.Status" class="selectpicker show-menu-arrow" data-dropup-auto="false" data-width="auto" disabled>
+                @foreach (var n in Enum.GetNames(typeof(MofoTaskingStatus)))
+                {
+                    if (Enum.TryParse<MofoTaskingStatus>(n, out MofoTaskingStatus status) && this.MofoTasking.Status == status)
+                    {
+                        <option selected value="@(((Enum)typeof(MofoTaskingStatus).GetField(n).GetValue(null)).ToString("d"))">@n</option>
+                    }
+                    else
+                    {
+                        <option value="@(((Enum)typeof(MofoTaskingStatus).GetField(n).GetValue(null)).ToString("d"))">@n</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="MofoCommand.CommandTime">CommandTime</label>
+            <input id="MofoCommand.CommandTime" name="MofoCommand.CommandTime" @bind="MofoTasking.MofoCommand.CommandTime" class="form-control" readonly>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="Type">Type</label><br />
+            <select id="Type" name="Type" @bind="MofoTasking.Type" class="selectpicker show-menu-arrow" data-dropup-auto="false" data-width="auto" disabled>
+                @foreach (var n in Enum.GetNames(typeof(MofoTaskingType)))
+                {
+                    if (Enum.TryParse<MofoTaskingType>(n, out MofoTaskingType type) && this.MofoTasking.Type == type)
+                    {
+                        <option selected value="@(((Enum)typeof(MofoTaskingType).GetField(n).GetValue(null)).ToString("d"))">@n</option>
+                    }
+                    else
+                    {
+                        <option value="@(((Enum)typeof(MofoTaskingType).GetField(n).GetValue(null)).ToString("d"))">@n</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="MofoCommand.User.UserName">UserName</label>
+            <input id="MofoCommand.User.UserName" name="MofoCommand.User.UserName" @bind="MofoTasking.MofoCommand.User.UserName" class="form-control" readonly>
+        </div>
+        <div class="form-group col-md-8">
+            <label for="MofoCommand.Command">Command</label>
+            <textarea id="MofoCommand.Command" name="MofoCommand.Command" @bind="MofoTasking.MofoCommand.Command" rows="1" class="form-control" readonly></textarea>
+        </div>
+    </div>
+    @for (int i = 0; i < Math.Min(MofoTasking.Parameters.Count, MofoTasking.MofoTask.Options.Count); i++)
+    {
+        <div class="form-group">
+            <label for="Parameters[@i]">@MofoTasking.MofoTask.Options[i].Name</label>
+            <input id="Parameters[@i]" name="Parameters[@i]" @bind="MofoTasking.Parameters[i]" class="form-control" readonly>
+        </div>
+    }
+    <div class="form-group">
+        <label for="MofoCommand.CommandOutput.Output">Output</label>
+        @if (this.MofoTasking.MofoTask.Name == "ScreenShot")
+        {
+            <img style="max-width:100%" src="data:image/png;base64, @MofoTasking.MofoCommand.CommandOutput.Output" />
+        }
+        else
+        {
+            <textarea asp-for="MofoCommand.CommandOutput.Output" @bind="MofoTasking.MofoCommand.CommandOutput.Output" rows="20" class="form-control" readonly></textarea>
+        }
+    </div>
+</form>
+
+@code {
+    [Parameter]
+    public MofoTasking MofoTasking { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.MofoTasking.Mofo = this.MofoTasking.Mofo ?? await Service.GetMofo(this.MofoTasking.MofoId);
+        this.MofoTasking.MofoTask = this.MofoTasking.MofoTask ?? await Service.GetMofoTask(this.MofoTasking.MofoTaskId);
+        this.MofoTasking.MofoCommand = this.MofoTasking.MofoCommand ?? await Service.GetMofoCommand(this.MofoTasking.MofoCommandId);
+        this.MofoTasking.MofoCommand.CommandOutput = this.MofoTasking.MofoCommand.CommandOutput ?? await Service.GetCommandOutput(this.MofoTasking.MofoCommand.CommandOutputId);
+        this.MofoTasking.MofoCommand.User = this.MofoTasking.MofoCommand.User ?? await Service.GetUser(this.MofoTasking.MofoCommand.UserId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await IJSRuntime.InvokeAsync<string>("InitializeSelectPicker", "#Type.selectpicker");
+        await IJSRuntime.InvokeAsync<string>("InitializeSelectPicker", "#Status.selectpicker");
+        await IJSRuntime.InvokeAsync<string>("InitializeSelectPicker", "#Type.selectpicker", ((int)Enum.Parse(typeof(MofoTaskingType), this.MofoTasking.Type.ToString())).ToString());
+        await IJSRuntime.InvokeAsync<string>("InitializeSelectPicker", "#Status.selectpicker", ((int)Enum.Parse(typeof(MofoTaskingStatus), this.MofoTasking.Status.ToString())).ToString());
+    }
+}

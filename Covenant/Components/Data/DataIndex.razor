@@ -1,15 +1,15 @@
 ﻿@page "/data"
 @page "/data/index"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 
 @using Microsoft.JSInterop
-@using Covenant.Core
-@using Covenant.Models.Covenant
-@using Covenant.Models.Indicators
-@using Covenant.Components.Credentials
-@using Covenant.Components.Indicators
-@using Covenant.Components.Events
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.LemonSqueezy
+@using LemonSqueezy.Models.Indicators
+@using LemonSqueezy.Components.Credentials
+@using LemonSqueezy.Components.Indicators
+@using LemonSqueezy.Components.Events
 @inject IJSRuntime IJSRuntime
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap pb-2 mb-3">
@@ -43,7 +43,7 @@
     </li>
 </ul>
 
-<div class="tab-content" id="grunt-tab-content">
+<div class="tab-content" id="mofo-tab-content">
     <div class="tab-pane fade" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
         <CredentialTables PasswordCredentials="PasswordCredentials" HashCredentials="HashCredentials" TicketCredentials="TicketCredentials" />
         <a href="/credential/create" class="btn btn-primary">

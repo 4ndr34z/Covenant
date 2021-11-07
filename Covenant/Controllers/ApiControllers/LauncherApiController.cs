@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System.Threading.Tasks;
@@ -8,18 +8,18 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-using Covenant.Core;
-using Covenant.Models.Launchers;
-using Covenant.Models.Listeners;
+using LemonSqueezy.Core;
+using LemonSqueezy.Models.Launchers;
+using LemonSqueezy.Models.Listeners;
 
-namespace Covenant.Controllers
+namespace LemonSqueezy.Controllers
 {
     [ApiController, Route("api/launchers"), Authorize(Policy = "RequireJwtBearer")]
     public class LauncherApiController : Controller
     {
-        private readonly ICovenantService _service;
+        private readonly ILemonSqueezyService _service;
 
-        public LauncherApiController(ICovenantService service)
+        public LauncherApiController(ILemonSqueezyService service)
         {
             _service = service;
         }

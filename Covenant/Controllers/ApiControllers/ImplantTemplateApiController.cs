@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System.Threading.Tasks;
@@ -8,17 +8,17 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-using Covenant.Core;
-using Covenant.Models.Grunts;
+using LemonSqueezy.Core;
+using LemonSqueezy.Models.Mofos;
 
-namespace Covenant.Controllers
+namespace LemonSqueezy.Controllers
 {
     [ApiController, Route("api/implanttemplates"), Authorize(Policy = "RequireJwtBearer")]
     public class ImplantTemplateApiController : Controller
     {
-        private readonly ICovenantService _service;
+        private readonly ILemonSqueezyService _service;
 
-        public ImplantTemplateApiController(ICovenantService service)
+        public ImplantTemplateApiController(ILemonSqueezyService service)
         {
             _service = service;
         }

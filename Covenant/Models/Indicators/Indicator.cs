@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Covenant.Models.Indicators
+namespace LemonSqueezy.Models.Indicators
 {
     public enum IndicatorType
     {

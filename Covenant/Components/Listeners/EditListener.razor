@@ -1,18 +1,18 @@
 ﻿@page "/listener/edit/{ListenerId:int}"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.Extensions.Configuration;
 
-@using Covenant.Core
-@using Covenant.Models.Covenant;
-@using Covenant.Models.Listeners;
-@using Covenant.Components.HostedFiles
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.LemonSqueezy;
+@using LemonSqueezy.Models.Listeners;
+@using LemonSqueezy.Components.HostedFiles
 
 @inject IJSRuntime IJSRuntime
-@inject UserManager<CovenantUser> UserManager
+@inject UserManager<LemonSqueezyUser> UserManager
 @inject IConfiguration Configuration
 @inject NavigationManager NavigationManager
 

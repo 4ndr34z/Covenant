@@ -1,28 +1,28 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-using Covenant.Models.Listeners;
-using Covenant.Models.Grunts;
+using LemonSqueezy.Models.Listeners;
+using LemonSqueezy.Models.Mofos;
 
-namespace Covenant.Models.Launchers
+namespace LemonSqueezy.Models.Launchers
 {
     public class BinaryLauncher : Launcher
     {
         public BinaryLauncher()
         {
             this.Type = LauncherType.Binary;
-            this.Description = "Uses a generated .NET Framework binary to launch a Grunt.";
+            this.Description = "Uses a generated .NET Framework binary to launch a Mofo.";
             this.Name = "Binary";
             this.OutputKind = OutputKind.ConsoleApplication;
             this.CompressStager = false;
         }
 
-        public override string GetLauncher(string StagerCode, byte[] StagerAssembly, Grunt grunt, ImplantTemplate template)
+        public override string GetLauncher(string StagerCode, byte[] StagerAssembly, Mofo mofo, ImplantTemplate template)
         {
             this.StagerCode = StagerCode;
             this.Base64ILByteString = Convert.ToBase64String(StagerAssembly);

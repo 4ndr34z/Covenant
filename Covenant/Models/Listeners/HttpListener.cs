@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
@@ -31,10 +31,10 @@ using NLog.Targets;
 
 using Newtonsoft.Json;
 
-using Covenant.Core;
-using APIModels = Covenant.API.Models;
+using LemonSqueezy.Core;
+using APIModels = LemonSqueezy.API.Models;
 
-namespace Covenant.Models.Listeners
+namespace LemonSqueezy.Models.Listeners
 {
     public class HostedFile
     {
@@ -49,11 +49,11 @@ namespace Covenant.Models.Listeners
         [Required]
         [DisplayName("UseSSL")]
         public bool UseSSL { get; set; } = false;
-        private string SSLCertificateFile { get { return this.ListenerDirectory + "httplistener-" + this.GUID + "-certificate.pfx"; } }
+        private string SSLCertificateFile { get { return this.ListenerDirectory + "httplistener-" + this.SOMEID + "-certificate.pfx"; } }
         [DisplayName("SSLCertificate")]
         public string SSLCertificate { get; set; }
         [DisplayName("SSLCertificatePassword")]
-        public string SSLCertificatePassword { get; set; } = "CovenantDev";
+        public string SSLCertificatePassword { get; set; } = "LemonSqueezyDev";
 
         [DisplayName("SSLCertHash")]
         public string SSLCertHash
@@ -159,7 +159,7 @@ namespace Covenant.Models.Listeners
                 context.SaveChanges();
                 InternalListener internalListener = services.GetRequiredService<InternalListener>();
                 IConfiguration configuration = services.GetRequiredService<IConfiguration>();
-                _ = internalListener.Configure(InternalListener.ToProfile(this.Profile), this.GUID, configuration["CovenantUrl"], configuration["CovenantToken"]);
+                _ = internalListener.Configure(InternalListener.ToProfile(this.Profile), this.SOMEID, configuration["LemonSqueezyUrl"], configuration["LemonSqueezyToken"]);
             }
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             LoggingConfiguration loggingConfig = new LoggingConfiguration();
@@ -171,7 +171,7 @@ namespace Covenant.Models.Listeners
                     loggingConfig.AddTarget("file", fileTarget);
                     consoleTarget.Layout = @"${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}";
                     fileTarget.Layout = @"${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}";
-                    fileTarget.FileName = Common.CovenantLogDirectory + "covenant-http.log";
+                    fileTarget.FileName = Common.LemonSqueezyLogDirectory + "covenant-http.log";
                     loggingConfig.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Fatal, "console");
                     loggingConfig.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Fatal, "file");
 
@@ -234,8 +234,8 @@ namespace Covenant.Models.Listeners
                     })
                     .UseNLog()
                     .UseStartup<HttpListenerStartup>()
-                    .UseSetting("CovenantUrl", this.CovenantUrl)
-                    .UseSetting("CovenantToken", this.CovenantToken)
+                    .UseSetting("LemonSqueezyUrl", this.LemonSqueezyUrl)
+                    .UseSetting("LemonSqueezyToken", this.LemonSqueezyToken)
                     .UseSetting("ProfileUrls", JsonConvert.SerializeObject((this.Profile as HttpProfile).HttpUrls))
                     .UseSetting("ListenerStaticHostDirectory", this.ListenerStaticHostDirectory)
                     .UseUrls((this.UseSSL ? "https://" : "http://") + this.BindAddress + ":" + this.BindPort);
@@ -247,7 +247,7 @@ namespace Covenant.Models.Listeners
         {
             hostFileRequest.Path = hostFileRequest.Path.TrimStart('/').TrimStart('\\');
             string FullPath = Path.GetFullPath(Path.Combine(this.ListenerStaticHostDirectory, hostFileRequest.Path));
-            if (!FullPath.StartsWith(this.ListenerStaticHostDirectory, StringComparison.OrdinalIgnoreCase)) { throw new CovenantDirectoryTraversalException(); }
+            if (!FullPath.StartsWith(this.ListenerStaticHostDirectory, StringComparison.OrdinalIgnoreCase)) { throw new LemonSqueezyDirectoryTraversalException(); }
             FileInfo file1 = new FileInfo(FullPath);
             string filename = Utilities.GetSanitizedFilename(file1.Name);
             FileInfo file = new FileInfo(file1.DirectoryName + Path.DirectorySeparatorChar + filename);
@@ -265,7 +265,7 @@ namespace Covenant.Models.Listeners
         public void UnhostFile(HostedFile hostFileRequest)
         {
             string FullPath = Path.GetFullPath(Path.Combine(this.ListenerStaticHostDirectory, hostFileRequest.Path));
-            if (!FullPath.StartsWith(this.ListenerStaticHostDirectory, StringComparison.OrdinalIgnoreCase)) { throw new CovenantDirectoryTraversalException(); }
+            if (!FullPath.StartsWith(this.ListenerStaticHostDirectory, StringComparison.OrdinalIgnoreCase)) { throw new LemonSqueezyDirectoryTraversalException(); }
             FileInfo file = new FileInfo(FullPath);
             if (file.Exists)
             {

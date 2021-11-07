@@ -1,0 +1,207 @@
+﻿@page "/mofo/interact/{MofoId:int}"
+@attribute [Authorize(Roles = "User, Administrator")]
+@inherits OwningComponentBase<ILemonSqueezyService>
+@implements IDisposable
+
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Components.Authorization
+
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+@using LemonSqueezy.Models.LemonSqueezy
+@using LemonSqueezy.Components.MofoTaskings
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject UserManager<LemonSqueezyUser> UserManager
+@inject IJSRuntime IJSRuntime
+@inject INotificationService INotificationService
+
+@if (this.Mofo == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap pb-2 mb-3">
+        <h1 class="h2">Mofo: <span id="mofo-name" class="primary-color">@Mofo.Name</span></h1>
+    </div>
+
+    @if (!string.IsNullOrEmpty(this.Mofo.Note))
+    {
+        <p><b>Note</b>: @Mofo.Note</p>
+    }
+
+    <ul class="nav nav-tabs mb-3" id="mofo-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="info-tab" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="false">
+                <span class="fe fe-info"></span>
+                Info
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="interact-tab" data-toggle="tab" href="#interact" role="tab" aria-controls="interact" aria-selected="false">
+                <span class="fe fe-terminal"></span>
+                Interact
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="task-tab" data-toggle="tab" href="#task" role="tab" aria-controls="task" aria-selected="false">
+                <span class="fe fe-box"></span>
+                Task
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="taskings-tab" data-toggle="tab" href="#taskings" role="tab" aria-controls="taskings" aria-selected="false">
+                <span class="fe fe-layers"></span>
+                Taskings
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="mofo-tab-content">
+        <div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="info-tab">
+            <MofoForm Mofo="Mofo" OnSubmit="OnEdit" />
+        </div>
+        <div class="tab-pane fade" id="interact" role="tabpanel" aria-labelledby="interact-tab">
+            <MofoInteractTerminal Mofo="Mofo" OnInteract="OnInteract" />
+        </div>
+        <div class="tab-pane fade" id="task" role="tabpanel" aria-labelledby="task-tab">
+            <MofoTaskAssignForm MofoId="MofoId" OnSubmit="OnTask" />
+        </div>
+        <div class="tab-pane fade mb-5" id="taskings" role="tabpanel" aria-labelledby="taskings-tab">
+            <MofoTaskingTable MofoTaskings="MofoTaskings" PageLength="50" />
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int MofoId { get; set; }
+
+    [Parameter]
+    public Mofo Mofo { get; set; }
+
+    private LemonSqueezyUser LemonSqueezyUser { get; set; }
+    private List<MofoTasking> MofoTaskings { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.Mofo = this.Mofo ?? await Service.GetMofo(this.MofoId);
+        AuthenticationState state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        this.LemonSqueezyUser = await UserManager.GetUserAsync(state.User);
+        this.MofoTaskings = (await Service.GetMofoTaskingsForMofo(this.MofoId)).ToList();
+        Service.DisposeContext();
+        this.INotificationService.OnEditMofo += OnEditMofo;
+        this.INotificationService.OnCreateMofoTasking += OnCreateMofoTasking;
+        this.INotificationService.OnEditMofoTasking += OnEditMofoTasking;
+    }
+
+    public void Dispose()
+    {
+        this.INotificationService.OnEditMofo -= OnEditMofo;
+        this.INotificationService.OnCreateMofoTasking -= OnCreateMofoTasking;
+        this.INotificationService.OnEditMofoTasking -= OnEditMofoTasking;
+    }
+
+    bool scrollToBottom = false;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await IJSRuntime.InvokeAsync<string>("ShowTab", "#info-tab");
+        }
+        if (scrollToBottom)
+        {
+            await IJSRuntime.InvokeAsync<string>("ScrollToBottom", "#interact-scroll");
+        }
+    }
+
+    private void OnEditMofo(object sender, Mofo mofo)
+    {
+        if (this.MofoId == mofo.Id)
+        {
+            this.Mofo = mofo;
+        }
+    }
+
+    private void OnCreateMofoTasking(object sender, MofoTasking mofoTasking)
+    {
+        if (this.MofoId == mofoTasking.MofoId)
+        {
+            this.MofoTaskings.Add(mofoTasking);
+            // scrollToBottom = true;
+        }
+    }
+
+    private void OnEditMofoTasking(object sender, MofoTasking mofoTasking)
+    {
+        if (this.MofoId == mofoTasking.MofoId)
+        {
+            int index = this.MofoTaskings.FindIndex(GT => GT.Id == mofoTasking.Id);
+            if (index != -1)
+            {
+                this.MofoTaskings[index] = mofoTasking;
+                // scrollToBottom = true;
+                _ = this.InvokeAsync(() => this.StateHasChanged());
+            }
+        }
+    }
+
+    private async Task OnEdit(Mofo mofo)
+    {
+        try
+        {
+            AuthenticationState state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            await Service.EditMofo(mofo, await Service.GetCurrentUser(state.User));
+            Service.DisposeContext();
+        }
+        catch (Exception e) when (e is ControllerNotFoundException || e is ControllerBadRequestException || e is ControllerUnauthorizedException)
+        {
+            // return RedirectToAction(nameof(Interact), new { id = mofo.Id });
+        }
+    }
+
+    private async Task OnInteract(Tuple<Mofo, string> tuple)
+    {
+        MofoCommand command = await Service.InteractMofo(this.Mofo.Id, this.LemonSqueezyUser.Id, tuple.Item2);
+        Service.DisposeContext();
+        this.StateHasChanged();
+    }
+
+    private async Task OnTask(MofoTask task)
+    {
+        try
+        {
+            AuthenticationState state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            task = await Service.EditMofoTask(task);
+            Service.DisposeContext();
+            LemonSqueezyUser currentUser = await Service.GetCurrentUser(state.User);
+            MofoCommand command = await Service.CreateMofoCommand(new MofoCommand
+            {
+                Command = task.GetVerboseCommand(),
+                CommandTime = DateTime.UtcNow,
+                UserId = currentUser.Id,
+                MofoId = this.Mofo.Id,
+                CommandOutputId = 0,
+                CommandOutput = new CommandOutput()
+            });
+            Service.DisposeContext();
+            MofoTasking created = await Service.CreateMofoTasking(new MofoTasking
+            {
+                MofoTaskId = task.Id,
+                MofoId = this.Mofo.Id,
+                Type = task.TaskingType,
+                Status = MofoTaskingStatus.Uninitialized,
+                MofoCommandId = command.Id
+            });
+            Service.DisposeContext();
+            await IJSRuntime.InvokeAsync<string>("ShowTab", "#interact-tab");
+        }
+        catch (Exception e) when (e is ControllerNotFoundException || e is ControllerBadRequestException || e is ControllerUnauthorizedException)
+        {
+            // return RedirectToAction(nameof(Index));
+        }
+    }
+}

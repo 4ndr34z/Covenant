@@ -1,14 +1,14 @@
 ﻿@page "/profile/edit/{ProfileId:int}"
 @attribute [Authorize(Roles = "Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Components.Authorization
-@using Covenant.Core
-@using Covenant.Models.Covenant
-@using Covenant.Models.Listeners
-@inject UserManager<CovenantUser> UserManager
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.LemonSqueezy
+@using LemonSqueezy.Models.Listeners
+@inject UserManager<LemonSqueezyUser> UserManager
 @inject IJSRuntime IJSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager

@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 using YamlDotNet.Serialization;
 
-namespace Covenant.Models.Listeners
+namespace LemonSqueezy.Models.Listeners
 {
     public enum ProfileType
     {
@@ -38,8 +38,8 @@ namespace Covenant.Models.Listeners
 
     public class BridgeProfile : Profile
     {
-        public string ReadFormat { get; set; } = @"{DATA},{GUID}";
-        public string WriteFormat { get; set; } = @"{DATA},{GUID}";
+        public string ReadFormat { get; set; } = @"{DATA},{SOMEID}";
+        public string WriteFormat { get; set; } = @"{DATA},{SOMEID}";
         public string BridgeMessengerCode { get; set; } =
 @"public interface IMessenger
 {
@@ -57,9 +57,9 @@ public class BridgeMessenger : IMessenger
     public string Identifier { get; set; } = """";
     public string Authenticator { get; set; } = """";
 
-    public BridgeMessenger(string CovenantURI, string Identifier, string WriteFormat)
+    public BridgeMessenger(string LemonSqueezyURI, string Identifier, string WriteFormat)
     {
-        this.CovenantURI = CovenantURI;
+        this.LemonSqueezyURI = LemonSqueezyURI;
         this.Identifier = Identifier;
         // TODO
     }
@@ -126,7 +126,7 @@ public class BridgeMessenger : IMessenger
 
     public class HttpProfile : Profile
     {
-        public List<string> HttpUrls { get; set; } = new List<string> { "/index.html?id={GUID}" };
+        public List<string> HttpUrls { get; set; } = new List<string> { "/index.html?id={SOMEID}" };
         public virtual List<HttpProfileHeader> HttpRequestHeaders { get; set; } = new List<HttpProfileHeader> { new HttpProfileHeader { Name = "User-Agent", Value = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36" } };
         public virtual List<HttpProfileHeader> HttpResponseHeaders { get; set; } = new List<HttpProfileHeader> { new HttpProfileHeader { Name = "Server", Value = "Microsoft-IIS/7.5" } };
 

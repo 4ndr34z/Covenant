@@ -4,7 +4,7 @@
 // regenerated.
 // </auto-generated>
 
-namespace Covenant.API.Models
+namespace LemonSqueezy.API.Models
 {
     using Newtonsoft.Json;
     using System.Linq;
@@ -54,12 +54,12 @@ namespace Covenant.API.Models
             Type = type;
             DotNetVersion = dotNetVersion;
             RuntimeIdentifier = runtimeIdentifier;
-            ValidateCert = validateCert;
-            UseCertPinning = useCertPinning;
+            ValCerT = validateCert;
+            UsCertPin = useCertPinning;
             SmbPipeName = smbPipeName;
             Delay = delay;
-            JitterPercent = jitterPercent;
-            ConnectAttempts = connectAttempts;
+            JItterPercent = jitterPercent;
+            ConneCTAttEmpts = connectAttempts;
             KillDate = killDate;
             LauncherString = launcherString;
             StagerCode = stagerCode;
@@ -143,12 +143,12 @@ namespace Covenant.API.Models
         /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "validateCert")]
-        public bool? ValidateCert { get; set; }
+        public bool? ValCerT { get; set; }
 
         /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "useCertPinning")]
-        public bool? UseCertPinning { get; set; }
+        public bool? UsCertPin { get; set; }
 
         /// <summary>
         /// </summary>
@@ -163,12 +163,12 @@ namespace Covenant.API.Models
         /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "jitterPercent")]
-        public int? JitterPercent { get; set; }
+        public int? JItterPercent { get; set; }
 
         /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "connectAttempts")]
-        public int? ConnectAttempts { get; set; }
+        public int? ConneCTAttEmpts { get; set; }
 
         /// <summary>
         /// </summary>

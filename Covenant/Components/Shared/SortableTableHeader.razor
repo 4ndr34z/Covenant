@@ -32,7 +32,7 @@
 
 @code {
     [CascadingParameter]
-    public CovenantTable<TItem> CovenantTable { get; set; }
+    public LemonSqueezyTable<TItem> LemonSqueezyTable { get; set; }
 
     [Parameter]
     public Func<TItem, TItem2> GetSortableProperty { get; set; }
@@ -48,12 +48,12 @@
 
     protected override void OnInitialized()
     {
-        this.CovenantTable.OnSortHeader += this.OnAnotherHeaderSorted;
+        this.LemonSqueezyTable.OnSortHeader += this.OnAnotherHeaderSorted;
     }
 
     public void Dispose()
     {
-        this.CovenantTable.OnSortHeader -= this.OnAnotherHeaderSorted;
+        this.LemonSqueezyTable.OnSortHeader -= this.OnAnotherHeaderSorted;
     }
 
     public void OnAnotherHeaderSorted(object sender, EventArgs e)
@@ -64,7 +64,7 @@
 
     private void OnSortHeader()
     {
-        _ = this.CovenantTable.OnSort(GetSortableProperty, this.Ascending);
+        _ = this.LemonSqueezyTable.OnSort(GetSortableProperty, this.Ascending);
         this.Ascending = !this.Ascending;
         this.Sorted = true;
         this.StateHasChanged();

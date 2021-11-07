@@ -1,15 +1,15 @@
 ﻿@page "/listener"
 @page "/listener/index"
 @attribute [Authorize(Roles = "User, Administrator")]
-@inherits OwningComponentBase<ICovenantService>
+@inherits OwningComponentBase<ILemonSqueezyService>
 @implements IDisposable
 
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Components.Authorization
 
-@using Covenant.Core
-@using Covenant.Models.Listeners
-@using Covenant.Components.Profiles
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Listeners
+@using LemonSqueezy.Components.Profiles
 @inject IJSRuntime IJSRuntime
 @inject INotificationService INotificationService
 @inject AuthenticationStateProvider AuthenticationStateProvider

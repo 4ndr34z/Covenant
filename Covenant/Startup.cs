@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: Covenant (https://github.com/cobbr/Covenant)
+// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
 // License: GNU GPLv3
 
 using System;
@@ -24,12 +24,12 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-using Covenant.Hubs;
-using Covenant.Core;
-using Covenant.Models;
-using Covenant.Models.Covenant;
+using LemonSqueezy.Hubs;
+using LemonSqueezy.Core;
+using LemonSqueezy.Models;
+using LemonSqueezy.Models.LemonSqueezy;
 
-namespace Covenant
+namespace LemonSqueezy
 {
     public class Startup
     {
@@ -43,13 +43,13 @@ namespace Covenant
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CovenantContext>(options =>
+            services.AddDbContext<LemonSqueezyContext>(options =>
             {
                 options.EnableSensitiveDataLogging(true);
             }, ServiceLifetime.Transient);
 
-            services.AddIdentity<CovenantUser, IdentityRole>()
-                .AddEntityFrameworkStores<CovenantContext>()
+            services.AddIdentity<LemonSqueezyUser, IdentityRole>()
+                .AddEntityFrameworkStores<LemonSqueezyContext>()
                 .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
@@ -76,8 +76,8 @@ namespace Covenant
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
 
-                options.LoginPath = "/CovenantUser/Login";
-                options.LogoutPath = "/CovenantUser/Logout";
+                options.LoginPath = "/LemonSqueezyUser/Login";
+                options.LogoutPath = "/LemonSqueezyUser/Logout";
                 options.AccessDeniedPath = "/Login/AccessDenied";
                 options.SlidingExpiration = true;
             });
@@ -92,7 +92,7 @@ namespace Covenant
                     {
                         ValidIssuer = Configuration["JwtIssuer"],
                         ValidAudience = Configuration["JwtAudience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Common.CovenantEncoding.GetBytes(Configuration["JwtKey"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Common.LemonSqueezyEncoding.GetBytes(Configuration["JwtKey"])),
                         ClockSkew = TimeSpan.Zero
                     };
                     options.Events = new JwtBearerEvents
@@ -154,7 +154,7 @@ namespace Covenant
                     return desc.RelativePath.StartsWith("api", StringComparison.CurrentCultureIgnoreCase);
                 });
 
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Covenant API", Version = "v0.1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "LemonSqueezy API", Version = "v0.1" });
                 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -191,11 +191,11 @@ namespace Covenant
 
             services.AddSingleton<ConcurrentDictionary<int, CancellationTokenSource>>();
             services.AddSingleton<INotificationService, NotificationService>();
-            services.AddSingleton<CovenantAPIService, CovenantAPIService>();
-            services.AddTransient<ICovenantService, CovenantService>();
-            // services.AddTransient<IRemoteCovenantService, CovenantHubService>();
-            // services.AddTransient<CovenantBlazorService>();
-            // services.AddSingleton<SignalRCovenantService>();
+            services.AddSingleton<LemonSqueezyAPIService, LemonSqueezyAPIService>();
+            services.AddTransient<ILemonSqueezyService, LemonSqueezyService>();
+            // services.AddTransient<IRemoteLemonSqueezyService, LemonSqueezyHubService>();
+            // services.AddTransient<LemonSqueezyBlazorService>();
+            // services.AddSingleton<SignalRLemonSqueezyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -210,7 +210,7 @@ namespace Covenant
                 });
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Covenant API V0.1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LemonSqueezy API V0.1");
                 });
                 app.Use((context, next) =>
                 {
@@ -233,9 +233,9 @@ namespace Covenant
                 endpoints.MapBlazorHub();
                 // endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapHub<GruntHub>("/grunthub");
+                endpoints.MapHub<MofoHub>("/mofohub");
                 endpoints.MapHub<EventHub>("/eventhub");
-                endpoints.MapHub<CovenantHub>("/covenanthub");
+                endpoints.MapHub<LemonSqueezyHub>("/covenanthub");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }

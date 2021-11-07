@@ -4,7 +4,7 @@
 // regenerated.
 // </auto-generated>
 
-namespace Covenant.API.Models
+namespace LemonSqueezy.API.Models
 {
     using Newtonsoft.Json;
     using System.Linq;
@@ -22,11 +22,11 @@ namespace Covenant.API.Models
         /// <summary>
         /// Initializes a new instance of the CommandOutput class.
         /// </summary>
-        public CommandOutput(int gruntCommandId, int? id = default(int?), string output = default(string))
+        public CommandOutput(int mofoCommandId, int? id = default(int?), string output = default(string))
         {
             Id = id;
             Output = output;
-            GruntCommandId = gruntCommandId;
+            MofoCommandId = mofoCommandId;
             CustomInit();
         }
 
@@ -47,8 +47,8 @@ namespace Covenant.API.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "gruntCommandId")]
-        public int GruntCommandId { get; set; }
+        [JsonProperty(PropertyName = "mofoCommandId")]
+        public int MofoCommandId { get; set; }
 
         /// <summary>
         /// Validate the object.

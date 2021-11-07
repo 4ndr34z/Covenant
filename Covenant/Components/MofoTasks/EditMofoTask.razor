@@ -1,0 +1,51 @@
+﻿@page "/mofotask/edit/{MofoTaskId:int}"
+@attribute [Authorize(Roles = "User, Administrator")]
+@inherits OwningComponentBase<ILemonSqueezyService>
+
+@using Microsoft.JSInterop
+@using LemonSqueezy.Core
+@using LemonSqueezy.Models.Mofos
+@inject IJSRuntime IJSRuntime
+@inject NavigationManager NavigationManager
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap pb-2 mb-3">
+    <h1 class="h2">MofoTask: <span class="primary-color">@MofoTask.Name</span></h1>
+</div>
+
+<MofoTaskForm MofoTask="MofoTask" OnSubmit="OnEdit" SubmitIcon="edit" SubmitLabel="Edit">
+    <button type="button" @onclick="OnExport" class="btn btn-secondary">
+        <span class="fe fe-share"></span>
+        Export
+    </button>
+</MofoTaskForm>
+
+@code {
+    [Parameter]
+    public int MofoTaskId { get; set; }
+
+    [Parameter]
+    public MofoTask MofoTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.MofoTask = this.MofoTask ?? await Service.GetMofoTask(this.MofoTaskId);
+    }
+
+    private async Task OnEdit(MofoTask task)
+    {
+        try
+        {
+            await Service.EditMofoTask(task);
+            NavigationManager.NavigateTo("/mofotask");
+        }
+        catch (Exception e) when (e is ControllerNotFoundException || e is ControllerBadRequestException || e is ControllerUnauthorizedException)
+        {
+            // return RedirectToAction(nameof(Edit), new { Id = taskModel.Id });
+        }
+    }
+
+    private async Task OnExport()
+    {
+        await IJSRuntime.InvokeAsync<string>("DownloadFile", this.MofoTask.Name + ".yaml", "application/x-yaml", Convert.ToBase64String(Common.LemonSqueezyEncoding.GetBytes(this.MofoTask.ToYaml())));
+    }
+}

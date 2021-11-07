@@ -5,23 +5,23 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 
-using Covenant.Hubs;
-using Covenant.Models.Covenant;
-using Covenant.Models.Listeners;
-using Covenant.Models.Launchers;
-using Covenant.Models.Grunts;
-using Covenant.Models.Indicators;
+using LemonSqueezy.Hubs;
+using LemonSqueezy.Models.LemonSqueezy;
+using LemonSqueezy.Models.Listeners;
+using LemonSqueezy.Models.Launchers;
+using LemonSqueezy.Models.Mofos;
+using LemonSqueezy.Models.Indicators;
 
-namespace Covenant.Core
+namespace LemonSqueezy.Core
 {
-    public interface ICovenantUserNotificationService
+    public interface ILemonSqueezyUserNotificationService
     {
-        event EventHandler<CovenantUser> OnCreateCovenantUser;
-        event EventHandler<CovenantUser> OnEditCovenantUser;
-        event EventHandler<string> OnDeleteCovenantUser;
-        Task NotifyCreateCovenantUser(object sender, CovenantUser user);
-        Task NotifyEditCovenantUser(object sender, CovenantUser user);
-        Task NotifyDeleteCovenantUser(object sender, string id);
+        event EventHandler<LemonSqueezyUser> OnCreateLemonSqueezyUser;
+        event EventHandler<LemonSqueezyUser> OnEditLemonSqueezyUser;
+        event EventHandler<string> OnDeleteLemonSqueezyUser;
+        Task NotifyCreateLemonSqueezyUser(object sender, LemonSqueezyUser user);
+        Task NotifyEditLemonSqueezyUser(object sender, LemonSqueezyUser user);
+        Task NotifyDeleteLemonSqueezyUser(object sender, string id);
     }
 
     public interface IIdentityRoleNotificationService
@@ -63,13 +63,13 @@ namespace Covenant.Core
         event EventHandler<int> OnDeleteImplantTemplate;
     }
 
-    public interface IGruntNotificationService
+    public interface IMofoNotificationService
     {
-        event EventHandler<Grunt> OnCreateGrunt;
-        event EventHandler<Grunt> OnEditGrunt;
-        event EventHandler<int> OnDeleteGrunt;
-        Task NotifyCreateGrunt(object sender, Grunt grunt);
-        Task NotifyEditGrunt(object sender, Grunt grunt);
+        event EventHandler<Mofo> OnCreateMofo;
+        event EventHandler<Mofo> OnEditMofo;
+        event EventHandler<int> OnDeleteMofo;
+        Task NotifyCreateMofo(object sender, Mofo mofo);
+        Task NotifyEditMofo(object sender, Mofo mofo);
     }
 
     public interface IReferenceAssemblyNotificationService
@@ -93,28 +93,28 @@ namespace Covenant.Core
         event EventHandler<int> OnDeleteReferenceSourceLibrary;
     }
 
-    public interface IGruntTaskOptionNotificationService
+    public interface IMofoTaskOptionNotificationService
     {
-        event EventHandler<GruntTaskOption> OnCreateGruntTaskOption;
-        event EventHandler<GruntTaskOption> OnEditGruntTaskOption;
-        event EventHandler<int> OnDeleteGruntTaskOption;
+        event EventHandler<MofoTaskOption> OnCreateMofoTaskOption;
+        event EventHandler<MofoTaskOption> OnEditMofoTaskOption;
+        event EventHandler<int> OnDeleteMofoTaskOption;
     }
 
-    public interface IGruntTaskNotificationService : IReferenceAssemblyNotificationService, IEmbeddedResourceNotificationService,
-        IReferenceSourceLibraryNotificationService, IGruntTaskOptionNotificationService
+    public interface IMofoTaskNotificationService : IReferenceAssemblyNotificationService, IEmbeddedResourceNotificationService,
+        IReferenceSourceLibraryNotificationService, IMofoTaskOptionNotificationService
     {
-        event EventHandler<GruntTask> OnCreateGruntTask;
-        event EventHandler<GruntTask> OnEditGruntTask;
-        event EventHandler<int> OnDeleteGruntTask;
+        event EventHandler<MofoTask> OnCreateMofoTask;
+        event EventHandler<MofoTask> OnEditMofoTask;
+        event EventHandler<int> OnDeleteMofoTask;
     }
 
-    public interface IGruntCommandNotificationService
+    public interface IMofoCommandNotificationService
     {
-        event EventHandler<GruntCommand> OnCreateGruntCommand;
-        event EventHandler<GruntCommand> OnEditGruntCommand;
-        event EventHandler<int> OnDeleteGruntCommand;
-        Task NotifyCreateGruntCommand(object sender, GruntCommand command);
-        Task NotifyEditGruntCommand(object sender, GruntCommand command);
+        event EventHandler<MofoCommand> OnCreateMofoCommand;
+        event EventHandler<MofoCommand> OnEditMofoCommand;
+        event EventHandler<int> OnDeleteMofoCommand;
+        Task NotifyCreateMofoCommand(object sender, MofoCommand command);
+        Task NotifyEditMofoCommand(object sender, MofoCommand command);
     }
 
     public interface ICommandOutputNotificationService
@@ -126,13 +126,13 @@ namespace Covenant.Core
         Task NotifyCreateCommandOutput(object sender, CommandOutput output);
     }
 
-    public interface IGruntTaskingNotificationService
+    public interface IMofoTaskingNotificationService
     {
-        event EventHandler<GruntTasking> OnCreateGruntTasking;
-        event EventHandler<GruntTasking> OnEditGruntTasking;
-        event EventHandler<int> OnDeleteGruntTasking;
-        Task NotifyCreateGruntTasking(object sender, GruntTasking tasking);
-        Task NotifyEditGruntTasking(object sender, GruntTasking tasking);
+        event EventHandler<MofoTasking> OnCreateMofoTasking;
+        event EventHandler<MofoTasking> OnEditMofoTasking;
+        event EventHandler<int> OnDeleteMofoTasking;
+        Task NotifyCreateMofoTasking(object sender, MofoTasking tasking);
+        Task NotifyEditMofoTasking(object sender, MofoTasking tasking);
     }
 
     public interface ICredentialNotificationService
@@ -161,8 +161,8 @@ namespace Covenant.Core
         event EventHandler<Listener> OnCreateListener;
         event EventHandler<Listener> OnEditListener;
         event EventHandler<int> OnDeleteListener;
-        event EventHandler<Grunt> OnNotifyListener;
-        Task NotifyNotifyListener(object sender, Grunt grunt);
+        event EventHandler<Mofo> OnNotifyListener;
+        Task NotifyNotifyListener(object sender, Mofo mofo);
         Task NotifyCreateListener(object sender, Listener listener);
         Task NotifyEditListener(object sender, Listener listener);
     }
@@ -188,9 +188,9 @@ namespace Covenant.Core
         event EventHandler<int> OnDeleteLauncher;
     }
 
-    public interface INotificationService : ICovenantUserNotificationService, IIdentityRoleNotificationService, IIdentityUserRoleNotificationService, IThemeNotificationService,
-        IEventNotificationService, IImplantTemplateNotificationService, IGruntNotificationService, IGruntTaskNotificationService,
-        IGruntCommandNotificationService, ICommandOutputNotificationService, IGruntTaskingNotificationService,
+    public interface INotificationService : ILemonSqueezyUserNotificationService, IIdentityRoleNotificationService, IIdentityUserRoleNotificationService, IThemeNotificationService,
+        IEventNotificationService, IImplantTemplateNotificationService, IMofoNotificationService, IMofoTaskNotificationService,
+        IMofoCommandNotificationService, ICommandOutputNotificationService, IMofoTaskingNotificationService,
         ICredentialNotificationService, IIndicatorNotificationService, IListenerNotificationService, IProfileNotificationService,
         IHostedFileNotificationService, ILauncherNotificationService
     {
@@ -199,24 +199,24 @@ namespace Covenant.Core
 
     public class NotificationService : INotificationService
     {
-        private readonly IHubContext<GruntHub> _gruntHub;
+        private readonly IHubContext<MofoHub> _mofoHub;
         private readonly IHubContext<EventHub> _eventHub;
-        public NotificationService(IHubContext<GruntHub> grunthub, IHubContext<EventHub> eventhub)
+        public NotificationService(IHubContext<MofoHub> mofohub, IHubContext<EventHub> eventhub)
         {
-            _gruntHub = grunthub;
+            _mofoHub = mofohub;
             _eventHub = eventhub;
-            this.OnNotifyListener += async (sender, egressGrunt) =>
+            this.OnNotifyListener += async (sender, egressMofo) =>
             {
-                await _gruntHub.Clients.Group(egressGrunt.Listener.GUID).SendAsync("NotifyListener", egressGrunt.GUID);
+                await _mofoHub.Clients.Group(egressMofo.Listener.SOMEID).SendAsync("NotifyListener", egressMofo.SOMEID);
             };
             this.OnCreateEvent += async (sender, theEvent) => {
                 await _eventHub.Clients.Group(theEvent.Context).SendAsync("ReceiveEvent", theEvent);
             };
         }
 
-        public event EventHandler<CovenantUser> OnCreateCovenantUser = delegate { };
-        public event EventHandler<CovenantUser> OnEditCovenantUser = delegate { };
-        public event EventHandler<string> OnDeleteCovenantUser = delegate { };
+        public event EventHandler<LemonSqueezyUser> OnCreateLemonSqueezyUser = delegate { };
+        public event EventHandler<LemonSqueezyUser> OnEditLemonSqueezyUser = delegate { };
+        public event EventHandler<string> OnDeleteLemonSqueezyUser = delegate { };
         public event EventHandler<IdentityRole> OnCreateIdentityRole = delegate { };
         public event EventHandler<IdentityRole> OnEditIdentityRole = delegate { };
         public event EventHandler<string> OnDeleteIdentityRole = delegate { };
@@ -233,9 +233,9 @@ namespace Covenant.Core
         public event EventHandler<ImplantTemplate> OnCreateImplantTemplate = delegate { };
         public event EventHandler<ImplantTemplate> OnEditImplantTemplate = delegate { };
         public event EventHandler<int> OnDeleteImplantTemplate = delegate { };
-        public event EventHandler<Grunt> OnCreateGrunt = delegate { };
-        public event EventHandler<Grunt> OnEditGrunt = delegate { };
-        public event EventHandler<int> OnDeleteGrunt = delegate { };
+        public event EventHandler<Mofo> OnCreateMofo = delegate { };
+        public event EventHandler<Mofo> OnEditMofo = delegate { };
+        public event EventHandler<int> OnDeleteMofo = delegate { };
         public event EventHandler<ReferenceAssembly> OnCreateReferenceAssembly = delegate { };
         public event EventHandler<ReferenceAssembly> OnEditReferenceAssembly = delegate { };
         public event EventHandler<int> OnDeleteReferenceAssembly = delegate { };
@@ -245,21 +245,21 @@ namespace Covenant.Core
         public event EventHandler<ReferenceSourceLibrary> OnCreateReferenceSourceLibrary = delegate { };
         public event EventHandler<ReferenceSourceLibrary> OnEditReferenceSourceLibrary = delegate { };
         public event EventHandler<int> OnDeleteReferenceSourceLibrary = delegate { };
-        public event EventHandler<GruntTaskOption> OnCreateGruntTaskOption = delegate { };
-        public event EventHandler<GruntTaskOption> OnEditGruntTaskOption = delegate { };
-        public event EventHandler<int> OnDeleteGruntTaskOption = delegate { };
-        public event EventHandler<GruntTask> OnCreateGruntTask = delegate { };
-        public event EventHandler<GruntTask> OnEditGruntTask = delegate { };
-        public event EventHandler<int> OnDeleteGruntTask = delegate { };
-        public event EventHandler<GruntCommand> OnCreateGruntCommand = delegate { };
-        public event EventHandler<GruntCommand> OnEditGruntCommand = delegate { };
-        public event EventHandler<int> OnDeleteGruntCommand = delegate { };
+        public event EventHandler<MofoTaskOption> OnCreateMofoTaskOption = delegate { };
+        public event EventHandler<MofoTaskOption> OnEditMofoTaskOption = delegate { };
+        public event EventHandler<int> OnDeleteMofoTaskOption = delegate { };
+        public event EventHandler<MofoTask> OnCreateMofoTask = delegate { };
+        public event EventHandler<MofoTask> OnEditMofoTask = delegate { };
+        public event EventHandler<int> OnDeleteMofoTask = delegate { };
+        public event EventHandler<MofoCommand> OnCreateMofoCommand = delegate { };
+        public event EventHandler<MofoCommand> OnEditMofoCommand = delegate { };
+        public event EventHandler<int> OnDeleteMofoCommand = delegate { };
         public event EventHandler<CommandOutput> OnCreateCommandOutput = delegate { };
         public event EventHandler<CommandOutput> OnEditCommandOutput = delegate { };
         public event EventHandler<int> OnDeleteCommandOutput = delegate { };
-        public event EventHandler<GruntTasking> OnCreateGruntTasking = delegate { };
-        public event EventHandler<GruntTasking> OnEditGruntTasking = delegate { };
-        public event EventHandler<int> OnDeleteGruntTasking = delegate { };
+        public event EventHandler<MofoTasking> OnCreateMofoTasking = delegate { };
+        public event EventHandler<MofoTasking> OnEditMofoTasking = delegate { };
+        public event EventHandler<int> OnDeleteMofoTasking = delegate { };
         public event EventHandler<CapturedCredential> OnCreateCapturedCredential = delegate { };
         public event EventHandler<CapturedCredential> OnEditCapturedCredential = delegate { };
         public event EventHandler<int> OnDeleteCapturedCredential = delegate { };
@@ -272,7 +272,7 @@ namespace Covenant.Core
         public event EventHandler<Listener> OnCreateListener = delegate { };
         public event EventHandler<Listener> OnEditListener = delegate { };
         public event EventHandler<int> OnDeleteListener = delegate { };
-        public event EventHandler<Grunt> OnNotifyListener = delegate { };
+        public event EventHandler<Mofo> OnNotifyListener = delegate { };
         public event EventHandler<Profile> OnCreateProfile = delegate { };
         public event EventHandler<Profile> OnEditProfile = delegate { };
         public event EventHandler<int> OnDeleteProfile = delegate { };
@@ -282,9 +282,9 @@ namespace Covenant.Core
         public event EventHandler<Launcher> OnCreateLauncher = delegate { };
         public event EventHandler<Launcher> OnEditLauncher = delegate { };
         public event EventHandler<int> OnDeleteLauncher = delegate { };
-        public async Task NotifyCreateCovenantUser(object sender, CovenantUser user) { await Task.Run(() => this.OnCreateCovenantUser(sender, user)); }
-        public async Task NotifyEditCovenantUser(object sender, CovenantUser user) { await Task.Run(() => this.OnEditCovenantUser(sender, user)); }
-        public async Task NotifyDeleteCovenantUser(object sender, string id) { await Task.Run(() => this.OnDeleteCovenantUser(sender, id)); }
+        public async Task NotifyCreateLemonSqueezyUser(object sender, LemonSqueezyUser user) { await Task.Run(() => this.OnCreateLemonSqueezyUser(sender, user)); }
+        public async Task NotifyEditLemonSqueezyUser(object sender, LemonSqueezyUser user) { await Task.Run(() => this.OnEditLemonSqueezyUser(sender, user)); }
+        public async Task NotifyDeleteLemonSqueezyUser(object sender, string id) { await Task.Run(() => this.OnDeleteLemonSqueezyUser(sender, id)); }
 
         public async Task NotifyCreateTheme(object sender, Theme theme) { await Task.Run(() => this.OnCreateTheme(sender, theme)); }
         public async Task NotifyEditTheme(object sender, Theme theme) { await Task.Run(() => this.OnEditTheme(sender, theme)); }
@@ -292,19 +292,19 @@ namespace Covenant.Core
 
         public async Task NotifyCreateEvent(object sender, Event anEvent) { await Task.Run(() => this.OnCreateEvent(sender, anEvent)); }
 
-        public async Task NotifyCreateGrunt(object sender, Grunt grunt) { await Task.Run(() => this.OnCreateGrunt(sender, grunt)); }
-        public async Task NotifyEditGrunt(object sender, Grunt grunt) { await Task.Run(() => this.OnEditGrunt(sender, grunt)); }
+        public async Task NotifyCreateMofo(object sender, Mofo mofo) { await Task.Run(() => this.OnCreateMofo(sender, mofo)); }
+        public async Task NotifyEditMofo(object sender, Mofo mofo) { await Task.Run(() => this.OnEditMofo(sender, mofo)); }
 
-        public async Task NotifyCreateGruntCommand(object sender, GruntCommand command) { await Task.Run(() => this.OnCreateGruntCommand(sender, command)); }
-        public async Task NotifyEditGruntCommand(object sender, GruntCommand command) { await Task.Run(() => this.OnEditGruntCommand(sender, command)); }
+        public async Task NotifyCreateMofoCommand(object sender, MofoCommand command) { await Task.Run(() => this.OnCreateMofoCommand(sender, command)); }
+        public async Task NotifyEditMofoCommand(object sender, MofoCommand command) { await Task.Run(() => this.OnEditMofoCommand(sender, command)); }
 
         public async Task NotifyCreateCommandOutput(object sender, CommandOutput output) { await Task.Run(() => this.OnCreateCommandOutput(sender, output)); }
         public async Task NotifyEditCommandOutput(object sender, CommandOutput output) { await Task.Run(() => this.OnEditCommandOutput(sender, output)); }
 
-        public async Task NotifyCreateGruntTasking(object sender, GruntTasking tasking) { await Task.Run(() => this.OnCreateGruntTasking(sender, tasking)); }
-        public async Task NotifyEditGruntTasking(object sender, GruntTasking tasking) { await Task.Run(() => this.OnEditGruntTasking(sender, tasking)); }
+        public async Task NotifyCreateMofoTasking(object sender, MofoTasking tasking) { await Task.Run(() => this.OnCreateMofoTasking(sender, tasking)); }
+        public async Task NotifyEditMofoTasking(object sender, MofoTasking tasking) { await Task.Run(() => this.OnEditMofoTasking(sender, tasking)); }
 
-        public async Task NotifyNotifyListener(object sender, Grunt grunt) { await Task.Run(() => this.OnNotifyListener(sender, grunt)); }
+        public async Task NotifyNotifyListener(object sender, Mofo mofo) { await Task.Run(() => this.OnNotifyListener(sender, mofo)); }
 
         public async Task NotifyCreateListener(object sender, Listener listener) { await Task.Run(() => this.OnCreateListener(sender, listener)); }
         public async Task NotifyEditListener(object sender, Listener listener) { await Task.Run(() => this.OnEditListener(sender, listener)); }
