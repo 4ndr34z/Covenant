@@ -18,11 +18,11 @@ MessageTransform: |
     }
 HttpUrls:
     - /en-us/index.html?page={SOMEID}&v=1
-    - /en-us/doc.html?type={SOMEID}&v=1
-    - /en-us/test.html?message={SOMEID}&v=1
+    - /en-gb/doc.html?type={SOMEID}&v=1
+    - /en-au/test.html?message={SOMEID}&v=1
 HttpRequestHeaders:
     - Name: Accept
-      Value: /*/*
+      Value: text/html, application/xhtml+xml, application/xml;q=0.9
     - Name: Accept-Encoding
       Value: gzip, deflate
     - Name: User-Agent
