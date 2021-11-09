@@ -1091,7 +1091,23 @@ namespace MofoExecutor
             }
         }
 
-        private static string MofoEncMsgFormat = @"{{""SOMEID"":""{0}"",""Type"":{1},""Meta"":""{2}"",""IV"":""{3}"",""EncMsg"":""{4}"",""HMAC"":""{5}""}}";
+	    
+	    
+	
+        private static string GetMofoEncMsgFormat
+{
+    get
+    {
+        var sb = new StringBuilder(@"{{""SOMEID"":""{0}"",");
+        sb.Append(@"""Type"":{1},");
+        sb.Append(@"""Meta"":""{2}"",");
+        sb.Append(@"""IV"":""{3}"",");
+        sb.Append(@"""EncMsg"":""{4}"",");
+        sb.Append(@"""HMAC"":""{5}""}}");
+        return sb.ToString();
+    }
+}
+        private static string MofoEncMsgFormat = GetMofoEncMsgFormat;
         public static MofoEncMsg FromJson(string message)
         {
 			List<string> parseList = Utilities.Parse(message, MofoEncMsgFormat);
