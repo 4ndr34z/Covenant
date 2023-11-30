@@ -1,5 +1,5 @@
 ﻿// Author: Ryan Cobb (@cobbr_io)
-// Project: LemonSqueezy (https://github.com/cobbr/LemonSqueezy)
+// Project: LemonSqueezy (https://github.com/cobbr/Covenant)
 // License: GNU GPLv3
 
 using System;
@@ -67,7 +67,7 @@ namespace LemonSqueezy
                     !File.Exists(Path.Combine(Common.LemonSqueezyRubeusDirectory, "Rubeus.sln")))
                 {
                     Console.Error.WriteLine("Error: git submodules have not been initialized");
-                    Console.Error.WriteLine("LemonSqueezy's submodules can be cloned with: git clone --recurse-submodules https://github.com/cobbr/LemonSqueezy");
+                    Console.Error.WriteLine("LemonSqueezy's submodules can be cloned with: git clone --recurse-submodules https://github.com/4ndr34z/Covenant");
                     Console.Error.WriteLine("Or initialized after cloning with: git submodule update --init --recursive");
                     return -1;
                 }
@@ -169,7 +169,7 @@ namespace LemonSqueezy
                     {
                         Console.Error.WriteLine("WARNING: Running LemonSqueezy non-elevated. You may not have permission to start Listeners on low-numbered ports. Consider running LemonSqueezy elevated.");
                     }
-                    Console.WriteLine($"LemonSqueezy has started! Navigate to {LemonSqueezyUri} in a browser");
+                    Console.WriteLine($"Covenant has started! Navigate to {LemonSqueezyUri} in a browser");
                     host.Run();
                 }
                 catch (Exception ex)

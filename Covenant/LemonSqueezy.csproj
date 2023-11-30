@@ -6,6 +6,10 @@
     <Configurations>Release;Debug</Configurations>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
